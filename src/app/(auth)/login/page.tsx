@@ -3,14 +3,23 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AppForm } from "@/components/form/AppForm";
+import { AppInput } from "@/components/form/inputs/AppInput";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.email("Invalid email address").min(1, "Email is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = (data: LoginFormValues) => {
+    // In a real app we'd dispatch login here
     router.push("/dashboard");
   }
 
@@ -22,30 +31,45 @@ export default function LoginPage() {
           Enter your email and password to access your account
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" />
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link href="#" className="text-sm font-medium text-primary hover:underline">
+
+      {/* Form */}
+      <AppForm<LoginFormValues>
+        schema={loginSchema}
+        onSubmit={handleLogin}
+        defaultValues={{ email: "", password: "" }}
+      >
+        <CardContent className="space-y-4">
+          <AppInput
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="m@example.com"
+          />
+          <div className="relative mb-4">
+            <AppInput
+              name="password"
+              label="Password"
+              type="password"
+            />
+            <Link 
+              href="#" 
+              className="absolute right-0 -top-1.5 text-sm font-medium text-primary hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
-          <Input id="password" type="password" />
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <Button className="w-full text-md h-11" onClick={() => handleLogin()}>Sign in</Button>
-        <div className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-semibold text-primary hover:underline">
-            Sign up
-          </Link>
-        </div>
-      </CardFooter>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <Button type="submit" className="w-full text-md h-11">Sign in</Button>
+          <div className="text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-semibold text-primary hover:underline">
+              Sign up
+            </Link>
+          </div>
+        </CardFooter>
+      </AppForm>
+      
     </Card>
   );
 }
