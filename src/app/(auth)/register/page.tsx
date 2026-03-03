@@ -1,10 +1,34 @@
-import Link from "next/link";
+"use client"
+
+import { AppForm } from "@/components/form/AppForm";
+import { AppInput } from "@/components/form/inputs/AppInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email("Invalid email address").min(1, "Email is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { register, isLoading, error } = useAuth();
+
+  const handleRegister = async (data: RegisterFormValues) => {
+    const { error: registerError } = await register(data.email, data.password);
+
+    if (!registerError) {
+      router.push("/dashboard");
+    }
+  }
+
   return (
     <Card className="w-full border-0 shadow-xl dark:border-zinc-800 sm:border">
       <CardHeader className="space-y-1">
@@ -12,30 +36,56 @@ export default function RegisterPage() {
         <CardDescription className="text-center">
           Enter your details below to create your account
         </CardDescription>
+        {error && (
+          <div className="p-3 mt-3 text-sm text-red-500 bg-red-100 rounded-md dark:bg-red-900/30 dark:text-red-400">
+            {error}
+          </div>
+        )}
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input id="name" type="text" placeholder="John Doe" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" />
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <Button className="w-full text-md h-11">Create account</Button>
-        <div className="text-center text-sm">
-          Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-primary hover:underline">
-            Sign in
-          </Link>
-        </div>
-      </CardFooter>
+
+      {/* SignUP Form */}
+      <AppForm<RegisterFormValues>
+        schema={registerSchema}
+        onSubmit={handleRegister}
+        defaultValues={{ name: "", email: "", password: "" }}
+      >
+        <CardContent className="space-y-4">
+          <AppInput
+            name="name"
+            label="Full Name"
+            type="text"
+            placeholder="John Doe"
+            disabled={isLoading}
+          />
+          <AppInput
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="m@example.com"
+            disabled={isLoading}
+          />
+          <AppInput
+            name="password"
+            label="Password"
+            type="password"
+            disabled={isLoading}
+          />
+        </CardContent>
+
+        <CardFooter className="flex flex-col space-y-4 mt-4">
+          <Button type="submit" className="w-full text-md h-11" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Create account"}
+          </Button>
+
+          <div className="text-center text-sm">
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold text-primary hover:underline">
+              Sign in
+            </Link>
+          </div>
+        </CardFooter>
+      </AppForm>
+
     </Card>
   );
 }

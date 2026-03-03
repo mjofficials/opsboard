@@ -7,6 +7,7 @@ import { AppForm } from "@/components/form/AppForm";
 import { AppInput } from "@/components/form/inputs/AppInput";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address").min(1, "Email is required"),
@@ -17,10 +18,14 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, isLoading, error } = useAuth();
 
-  const handleLogin = (data: LoginFormValues) => {
-    // In a real app we'd dispatch login here
-    router.push("/dashboard");
+  const handleLogin = async (data: LoginFormValues) => {
+    const { error: loginError } = await login(data.email, data.password);
+    
+    if (!loginError) {
+      router.push("/dashboard");
+    }
   }
 
   return (
@@ -30,6 +35,11 @@ export default function LoginPage() {
         <CardDescription className="text-center">
           Enter your email and password to access your account
         </CardDescription>
+        {error && (
+          <div className="p-3 mt-3 text-sm text-red-500 bg-red-100 rounded-md dark:bg-red-900/30 dark:text-red-400">
+            {error}
+          </div>
+        )}
       </CardHeader>
 
       {/* Form */}
@@ -44,12 +54,14 @@ export default function LoginPage() {
             label="Email"
             type="email"
             placeholder="m@example.com"
+            disabled={isLoading}
           />
           <div className="relative mb-4">
             <AppInput
               name="password"
               label="Password"
               type="password"
+              disabled={isLoading}
             />
             <Link 
               href="#" 
@@ -60,7 +72,9 @@ export default function LoginPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full text-md h-11">Sign in</Button>
+          <Button type="submit" className="w-full text-md h-11" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign in"}
+          </Button>
           <div className="text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="font-semibold text-primary hover:underline">
