@@ -18,20 +18,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation"
-
-const data = {
-  user: {
-    name: "Admin",
-    email: "admin@opsboard.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-}
+import { useAuth } from "@/features/auth/hooks/useAuth"
 
 export default function Page({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { setTheme } = useTheme()
+  const { user, logout } = useAuth()
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     router.push("/login");
   }
 
@@ -68,7 +63,11 @@ export default function Page({ children }: { children: React.ReactNode }) {
             {/* Logout Button */}
             <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleLogout()}>Logout</Button>
             {/* User */}
-            <NavUser user={data.user} />
+            <NavUser user={{
+              name: "User",
+              email: user?.email || "No Email",
+              avatar: "/avatars/shadcn.jpg"
+            }} />
           </div>
         </header>
         {/* Main Content */}
