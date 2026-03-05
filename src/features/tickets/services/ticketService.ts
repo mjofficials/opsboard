@@ -8,7 +8,7 @@ export const ticketService = {
       .from('tickets')
       .select('*')
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data as Ticket[];
   },
@@ -20,7 +20,7 @@ export const ticketService = {
       .select('*')
       .eq('id', id)
       .single();
-    
+
     if (error) throw error;
     return data as Ticket;
   },
@@ -32,7 +32,7 @@ export const ticketService = {
       .insert([ticket])
       .select()
       .single();
-      
+
     if (error) throw error;
     return data as Ticket;
   },
@@ -45,7 +45,7 @@ export const ticketService = {
       .eq('id', id)
       .select()
       .single();
-      
+
     if (error) throw error;
     return data as Ticket;
   },
@@ -56,7 +56,7 @@ export const ticketService = {
       .from('tickets')
       .delete()
       .eq('id', id);
-      
+
     if (error) throw error;
   }
 };

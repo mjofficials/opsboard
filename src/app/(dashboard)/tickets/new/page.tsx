@@ -1,23 +1,12 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { z } from "zod"
 import { useTickets } from "@/features/tickets/hooks/useTickets"
 import { useAuth } from "@/features/auth/hooks/useAuth"
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { AppForm } from "@/components/form/AppForm"
-import { AppInput } from "@/components/form/inputs/AppInput"
 import { TicketPriority, TicketStatus } from "@/features/tickets/types"
+import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
 
-const ticketSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(10, "Please provide a detailed description (minimum 10 characters)"),
-  priority: z.enum(['low', 'medium', 'high', 'urgent'] as const),
-})
-
-type TicketFormValues = z.infer<typeof ticketSchema>
 
 export default function NewTicketPage() {
   const router = useRouter()
@@ -39,10 +28,10 @@ export default function NewTicketPage() {
     const { error } = await addTicket(newTicket)
 
     if (!error) {
-       router.push("/dashboard/tickets")
+      router.push("/tickets")
     } else {
-       console.error("Failed to create ticket", error)
-       // A realistic application might pop a toast here
+      console.error("Failed to create ticket", error)
+      // A realistic application might pop a toast here
     }
   }
 
@@ -52,54 +41,12 @@ export default function NewTicketPage() {
         <h1 className="text-3xl font-bold tracking-tight">Create Ticket</h1>
       </div>
 
-      <Card className="border-0 shadow-sm dark:border-zinc-800 sm:border">
-        <CardHeader>
-          <CardTitle>Ticket Details</CardTitle>
-          <CardDescription>
-            Enter the details for this new operations request or bug report.
-          </CardDescription>
-        </CardHeader>
-        
-        <AppForm<TicketFormValues>
-          schema={ticketSchema}
-          onSubmit={handleSubmit}
-          defaultValues={{
-             title: "",
-             description: "",
-             priority: "medium"
-          }}
-        >
-          <CardContent className="space-y-4">
-            <AppInput 
-              name="title" 
-              label="Subject / Title" 
-              placeholder="E.g. Database connection timeouts" 
-            />
-
-            {/* In a real scenario you would have AppSelect and AppTextarea. We use AppInput as fallback */}
-            <AppInput
-              name="priority"
-              label="Priority Level (low, medium, high, urgent)"
-              placeholder="medium"
-            />
-
-            <AppInput 
-              name="description" 
-              label="Detailed Description" 
-              placeholder="Please describe the issue in detail..." 
-            />
-
-          </CardContent>
-          <CardFooter>
-            <Button type="button" variant="outline" className="mr-4" onClick={() => router.back()}>
-              Cancel
-            </Button>
-            <Button type="submit">
-              Submit Ticket
-            </Button>
-          </CardFooter>
-        </AppForm>
-      </Card>
+      <TicketForm
+        onSubmit={handleSubmit}
+        title="Ticket Details"
+        description="Enter the details for this new operations request or bug report."
+        submitText="Submit Ticket"
+      />
     </div>
   )
 }

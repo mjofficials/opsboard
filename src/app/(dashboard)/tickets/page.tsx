@@ -1,10 +1,18 @@
 "use client"
 
-import { useTickets } from "@/features/tickets/hooks/useTickets"
 import { AppTable } from "@/components/common/AppTable"
-import { ColumnDef } from "@tanstack/react-table"
-import { Ticket } from "@/features/tickets/types"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { useTickets } from "@/features/tickets/hooks/useTickets"
+import { Ticket } from "@/features/tickets/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { EllipsisVertical } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function TicketsPage() {
@@ -40,6 +48,29 @@ export default function TicketsPage() {
         return dateString ? new Date(dateString).toLocaleDateString() : "Unknown"
       },
     },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        // <Button variant="outline" size="sm" onClick={() => router.push(`/tickets/${row.original.id}`)}>
+        //   View
+        // </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <EllipsisVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => router.push(`/tickets/${row.original.id}`)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(`/tickets/${row.original.id}/edit`)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem>Delete</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    }
   ]
 
   if (isError) {
@@ -54,7 +85,7 @@ export default function TicketsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Tickets</h1>
-        <Button onClick={() => router.push("/dashboard/tickets/new")}>
+        <Button onClick={() => router.push("/tickets/new")}>
           Create Ticket
         </Button>
       </div>
