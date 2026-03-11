@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { AppForm } from "@/components/form/AppForm"
 import { AppInput } from "@/components/form/inputs/AppInput"
+import { AppSelect } from "@/components/form/inputs/AppSelect"
 
 export const ticketSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -66,10 +67,16 @@ export function TicketForm({
                         placeholder="E.g. Database connection timeouts"
                     />
 
-                    <AppInput
+                    <AppSelect
                         name="priority"
-                        label="Priority Level (low, medium, high, urgent)"
-                        placeholder="medium"
+                        label="Priority Level"
+                        options={[
+                            { value: "low", label: "Low" },
+                            { value: "medium", label: "Medium" },
+                            { value: "high", label: "High" },
+                            { value: "urgent", label: "Urgent" },
+                        ]}
+                        placeholder="Select Priority"
                     />
 
                     <AppInput

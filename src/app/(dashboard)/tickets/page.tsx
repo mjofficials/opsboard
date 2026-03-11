@@ -2,22 +2,22 @@
 
 import { AppTable } from "@/components/common/AppTable"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
 import { useTickets } from "@/features/tickets/hooks/useTickets"
-import { Ticket } from "@/features/tickets/types"
+import { Ticket, TicketPriority } from "@/features/tickets/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EllipsisVertical } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function TicketsPage() {
   const router = useRouter()
-  const { tickets, isLoading, isError, error } = useTickets()
+  const { tickets, isLoading, isError, error, removeTicket } = useTickets()
+
+  const priorityColorMap: Record<TicketPriority, string> = {
+    low: "bg-green-100 text-green-800 border-green-200",
+    medium: "bg-blue-100 text-blue-800 border-blue-200",
+    high: "bg-purple-100 text-purple-800 border-purple-200",
+    urgent: "bg-red-100 text-red-800 border-red-200",
+  }
 
   const columns: ColumnDef<Ticket>[] = [
     {
@@ -37,7 +37,9 @@ export default function TicketsPage() {
       accessorKey: "priority",
       header: "Priority",
       cell: ({ row }) => (
-        <span className="capitalize">{row.getValue("priority")}</span>
+        <span className={`capitalize px-2 py-1 rounded border text-xs ${priorityColorMap[row.getValue("priority") as TicketPriority]}`}>
+          {row.getValue("priority")}
+        </span>
       ),
     },
     {
@@ -47,31 +49,17 @@ export default function TicketsPage() {
         const dateString: string = row.getValue("created_at")
         return dateString ? new Date(dateString).toLocaleDateString() : "Unknown"
       },
-    },
-    {
-      accessorKey: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        // <Button variant="outline" size="sm" onClick={() => router.push(`/tickets/${row.original.id}`)}>
-        //   View
-        // </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <EllipsisVertical />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push(`/tickets/${row.original.id}`)}>View</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/tickets/${row.original.id}/edit`)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
     }
-  ]
+  ];
+
+  const handleDelete = async (id: string) => {
+    const { error } = await removeTicket(id)
+    if (!error) {
+      toast.success("Ticket deleted successfully")
+    } else {
+      toast.error("Failed to delete ticket")
+    }
+  }
 
   if (isError) {
     return (
@@ -93,7 +81,13 @@ export default function TicketsPage() {
       {isLoading ? (
         <div className="py-10 text-center text-muted-foreground animate-pulse">Loading dataset...</div>
       ) : (
-        <AppTable columns={columns} data={tickets || []} />
+        <AppTable
+          columns={columns}
+          data={tickets || []}
+          handleView={(args) => router.push(`/tickets/${args.id}`)}
+          handleEdit={(args) => router.push(`/tickets/${args.id}/edit`)}
+          handleDelete={(args) => handleDelete(args.id)}
+        />
       )}
     </div>
   )

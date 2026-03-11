@@ -10,6 +10,14 @@ import {
   getSortedRowModel,
   SortingState,
 } from "@tanstack/react-table"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { EllipsisVertical } from "lucide-react"
 
 import {
   Table,
@@ -25,17 +33,44 @@ interface AppTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   searchKey?: string
+  actions?: React.ReactNode
+  handleView?: (args: TData) => void
+  handleEdit?: (args: TData) => void
+  handleDelete?: (args: TData) => void
 }
 
 export function AppTable<TData, TValue>({
   columns,
   data,
+  actions,
+  handleView,
+  handleEdit,
+  handleDelete
 }: AppTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
 
   const table = useReactTable({
     data,
-    columns,
+    columns: [...columns, {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <EllipsisVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => handleView?.(row.original)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEdit?.(row.original)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDelete?.(row.original)}>Delete</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    }],
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -58,9 +93,9 @@ export function AppTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

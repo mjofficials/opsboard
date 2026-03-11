@@ -6,6 +6,8 @@ import { useTickets } from "@/features/tickets/hooks/useTickets"
 import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
 import { ticketService } from "@/features/tickets/services/ticketService"
 import { Ticket } from "@/features/tickets/types"
+import { toast } from "sonner"
+import { AppLoader } from "@/components/common/AppLoader"
 
 export default function EditTicketPage() {
     const router = useRouter()
@@ -41,17 +43,16 @@ export default function EditTicketPage() {
         const { error } = await editTicket(id as string, updates)
 
         if (!error) {
-            router.push(`/tickets/${id}`)
+            router.push(`/tickets`)
+            toast.success("Ticket updated successfully")
         } else {
-            console.error("Failed to edit ticket", error)
+            toast.error("Failed to edit ticket")
         }
     }
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center p-12">
-                <p className="text-muted-foreground animate-pulse">Loading ticket data...</p>
-            </div>
+            <AppLoader title="Loading ticket data..." description="Please wait while we load the ticket data." />
         )
     }
 

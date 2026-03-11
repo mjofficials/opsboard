@@ -6,6 +6,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth"
 
 import { TicketPriority, TicketStatus } from "@/features/tickets/types"
 import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
+import { toast } from "sonner"
 
 
 export default function NewTicketPage() {
@@ -29,9 +30,9 @@ export default function NewTicketPage() {
 
     if (!error) {
       router.push("/tickets")
+      toast.success("Ticket created successfully")
     } else {
-      console.error("Failed to create ticket", error)
-      // A realistic application might pop a toast here
+      toast.error("Failed to create ticket")
     }
   }
 
