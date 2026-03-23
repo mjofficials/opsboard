@@ -1,30 +1,46 @@
-import { useEffect, useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/store';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ticketService } from '../services/ticketService';
-import { fetchTickets } from '../ticketSlice';
 import { Ticket } from '../types';
 
 export const useTickets = () => {
-  const dispatch = useAppDispatch();
-  const { items: tickets, status, error } = useAppSelector((state) => state.tickets);
+  const queryClient = useQueryClient();
 
-  const loadTickets = useCallback(async () => {
-    dispatch(fetchTickets());
-  }, [dispatch]);
+  const {
+    data: tickets,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['tickets'],
+    queryFn: ticketService.getTickets,
+  });
 
-  // Optionally load automatically when component mounts, 
-  // though for some apps you may choose to invoke this manually via pages.
-  useEffect(() => {
-    if (status === 'idle') {
-       loadTickets();
-    }
-  }, [status, loadTickets]);
+  const invalidateTickets = () => {
+    queryClient.invalidateQueries({ queryKey: ['tickets'] });
+  };
 
+  const addMutation = useMutation({
+    mutationFn: (ticketData: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) => 
+      ticketService.createTicket(ticketData),
+    onSuccess: invalidateTickets,
+  });
+
+  const editMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Ticket> }) => 
+      ticketService.updateTicket(id, updates),
+    onSuccess: invalidateTickets,
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: (id: string) => ticketService.deleteTicket(id),
+    onSuccess: invalidateTickets,
+  });
+
+  // Wrapping mutations to maintain the same API return format `{ error }`
   const addTicket = async (ticketData: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      await ticketService.createTicket(ticketData);
-      // reload tickets list locally immediately upon creation success.
-      await loadTickets(); 
+      await addMutation.mutateAsync(ticketData);
       return { error: null };
     } catch (err: any) {
       return { error: err.message };
@@ -33,8 +49,7 @@ export const useTickets = () => {
 
   const editTicket = async (id: string, updates: Partial<Ticket>) => {
     try {
-      await ticketService.updateTicket(id, updates);
-      await loadTickets();
+      await editMutation.mutateAsync({ id, updates });
       return { error: null };
     } catch (err: any) {
       return { error: err.message };
@@ -43,8 +58,7 @@ export const useTickets = () => {
 
   const removeTicket = async (id: string) => {
     try {
-      await ticketService.deleteTicket(id);
-      await loadTickets();
+      await removeMutation.mutateAsync(id);
       return { error: null };
     } catch (err: any) {
       return { error: err.message };
@@ -53,12 +67,12 @@ export const useTickets = () => {
 
   return {
     tickets,
-    isLoading: status === 'loading',
-    isError: status === 'failed',
-    error,
+    isLoading,
+    isError,
+    error: error ? (error as Error).message : null,
     addTicket,
     editTicket,
     removeTicket,
-    refreshTickets: loadTickets,
+    refreshTickets: refetch,
   };
 };
