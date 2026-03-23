@@ -62,11 +62,9 @@ export default function TicketsPage() {
   }
 
   if (isError) {
-    return (
-      <div className="p-4 text-sm text-red-500 bg-red-100 rounded-md">
-        Failed to load tickets: {error}
-      </div>
-    )
+    toast.error("Failed to load tickets", {
+      description: error
+    })
   }
 
   return (

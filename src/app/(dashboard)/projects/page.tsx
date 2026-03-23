@@ -50,11 +50,9 @@ export default function ProjectsPage() {
   }
 
   if (isError) {
-    return (
-      <div className="p-4 text-sm text-red-500 bg-red-100 rounded-md">
-        Failed to load projects: {error}
-      </div>
-    )
+    toast.error("Failed to load projects", {
+      description: error
+    })
   }
 
   return (
