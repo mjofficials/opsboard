@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import { ReduxProvider } from "@/store/ReduxProvider";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <Toaster position="top-center" />
             </ThemeProvider>
           </ReactQueryProvider>
         </ReduxProvider>

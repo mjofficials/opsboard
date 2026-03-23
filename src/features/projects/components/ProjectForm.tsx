@@ -9,18 +9,17 @@ import { AppForm } from "@/components/form/AppForm"
 import { AppInput } from "@/components/form/inputs/AppInput"
 import { AppSelect } from "@/components/form/inputs/AppSelect"
 
-export const ticketSchema = z.object({
+export const projectSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     description: z.string().min(10, "Please provide a detailed description (minimum 10 characters)"),
-    status: z.enum(['open', 'in_progress', 'resolved', 'closed'] as const),
-    priority: z.enum(['low', 'medium', 'high', 'urgent'] as const),
+    status: z.enum(['open', 'in_progress', 'on_hold', 'completed'] as const),
 })
 
-export type TicketFormValues = z.infer<typeof ticketSchema>
+export type ProjectFormValues = z.infer<typeof projectSchema>
 
-interface TicketFormProps {
-    initialData?: TicketFormValues
-    onSubmit: (data: TicketFormValues) => Promise<void>
+interface ProjectFormProps {
+    initialData?: ProjectFormValues
+    onSubmit: (data: ProjectFormValues) => Promise<void>
     onCancel?: () => void
     title?: string
     description?: string
@@ -28,15 +27,15 @@ interface TicketFormProps {
     isReadOnly?: boolean
 }
 
-export function TicketForm({
+export function ProjectForm({
     initialData,
     onSubmit,
     onCancel,
-    title = "Ticket Details",
-    description = "Enter the details for this ticket.",
-    submitText = "Submit Ticket",
+    title = "Project Details",
+    description = "Enter the details for this project.",
+    submitText = "Submit Project",
     isReadOnly = false
-}: TicketFormProps) {
+}: ProjectFormProps) {
     const router = useRouter()
 
     const handleCancel = () => {
@@ -54,21 +53,20 @@ export function TicketForm({
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
 
-            <AppForm<TicketFormValues>
-                schema={ticketSchema}
+            <AppForm<ProjectFormValues>
+                schema={projectSchema}
                 onSubmit={onSubmit}
                 defaultValues={initialData || {
                     title: "",
                     description: "",
-                    status: "open",
-                    priority: "medium"
+                    status: "open"
                 }}
             >
                 <CardContent className="space-y-4">
                     <AppInput
                         name="title"
                         label="Subject / Title"
-                        placeholder="E.g. Database connection timeouts"
+                        placeholder="E.g. New project"
                         disabled={isReadOnly}
                     />
 
@@ -78,30 +76,17 @@ export function TicketForm({
                         options={[
                             { value: "open", label: "Open" },
                             { value: "in_progress", label: "In Progress" },
-                            { value: "resolved", label: "Resolved" },
-                            { value: "closed", label: "Closed" },
+                            { value: "on_hold", label: "On Hold" },
+                            { value: "completed", label: "Completed" },
                         ]}
                         placeholder="Select Status"
-                        disabled={isReadOnly}
-                    />
-
-                    <AppSelect
-                        name="priority"
-                        label="Priority Level"
-                        options={[
-                            { value: "low", label: "Low" },
-                            { value: "medium", label: "Medium" },
-                            { value: "high", label: "High" },
-                            { value: "urgent", label: "Urgent" },
-                        ]}
-                        placeholder="Select Priority"
                         disabled={isReadOnly}
                     />
 
                     <AppInput
                         name="description"
                         label="Detailed Description"
-                        placeholder="Please describe the issue in detail..."
+                        placeholder="Please describe the project in detail..."
                         disabled={isReadOnly}
                     />
                 </CardContent>

@@ -1,13 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { useTickets, useTicket } from "@/features/tickets/hooks/useTickets"
-import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
-import { ticketService } from "@/features/tickets/services/ticketService"
-import { Ticket } from "@/features/tickets/types"
-import { toast } from "sonner"
 import { AppLoader } from "@/components/common/AppLoader"
+import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
+import { useTicket, useTickets } from "@/features/tickets/hooks/useTickets"
+import { TicketPriority, TicketStatus } from "@/features/tickets/types"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { toast } from "sonner"
 
 export default function EditTicketPage() {
     const router = useRouter()
@@ -27,7 +26,8 @@ export default function EditTicketPage() {
         const updates = {
             title: data.title,
             description: data.description,
-            priority: data.priority,
+            status: data.status as TicketStatus,
+            priority: data.priority as TicketPriority,
         }
 
         const { error } = await editTicket(id as string, updates)
@@ -53,7 +53,8 @@ export default function EditTicketPage() {
     const initialData: TicketFormValues = {
         title: ticket.title,
         description: ticket.description || "",
-        priority: ticket.priority as any
+        status: ticket.status as TicketStatus,
+        priority: ticket.priority as TicketPriority
     }
 
     return (

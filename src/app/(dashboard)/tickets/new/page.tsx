@@ -22,7 +22,7 @@ export default function NewTicketPage() {
       title: data.title,
       description: data.description,
       priority: data.priority as TicketPriority,
-      status: 'open' as TicketStatus,
+      status: data.status as TicketStatus,
       created_by: user.id
     }
 

@@ -29,6 +29,21 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Trash2Icon } from "lucide-react"
+
 interface AppTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -48,6 +63,8 @@ export function AppTable<TData, TValue>({
   handleDelete
 }: AppTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
+  const [selectedItemId, setSelectedItemId] = React.useState<TData | null>(null)
 
   const table = useReactTable({
     data,
@@ -55,20 +72,46 @@ export function AppTable<TData, TValue>({
       accessorKey: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <EllipsisVertical />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => handleView?.(row.original)}>View</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEdit?.(row.original)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDelete?.(row.original)}>Delete</DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <EllipsisVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => handleView?.(row.original)}>View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit?.(row.original)}>Edit</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedItemId(row.original)
+                    setIsDeleteDialogOpen(true)
+                  }}
+                  // Prevent the dropdown menu from closing when this item is selected
+                  onSelect={(e) => e.preventDefault()}>
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Delete Dialog */}
+          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialogContent size="sm">
+              <AlertDialogHeader>
+                <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                  <Trash2Icon />
+                </AlertDialogMedia>
+                <AlertDialogTitle>Are you sure you want to delete this item?</AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={() => handleDelete?.(selectedItemId!)}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       ),
     }],
     getCoreRowModel: getCoreRowModel(),

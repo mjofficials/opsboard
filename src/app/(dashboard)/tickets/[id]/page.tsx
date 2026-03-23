@@ -8,6 +8,7 @@ import { AppLoader } from "@/components/common/AppLoader"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { TicketPriority, TicketStatus } from "@/features/tickets/types"
 
 export default function ViewTicketPage() {
     const router = useRouter()
@@ -41,7 +42,8 @@ export default function ViewTicketPage() {
     const initialData: TicketFormValues = {
         title: ticket.title,
         description: ticket.description || "",
-        priority: ticket.priority as any
+        status: ticket.status as TicketStatus,
+        priority: ticket.priority as TicketPriority
     }
 
     return (
