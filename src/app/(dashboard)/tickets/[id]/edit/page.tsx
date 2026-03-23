@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useTickets } from "@/features/tickets/hooks/useTickets"
+import { useTickets, useTicket } from "@/features/tickets/hooks/useTickets"
 import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
 import { ticketService } from "@/features/tickets/services/ticketService"
 import { Ticket } from "@/features/tickets/types"
@@ -13,24 +13,14 @@ export default function EditTicketPage() {
     const router = useRouter()
     const { id } = useParams()
     const { editTicket } = useTickets()
-    const [ticket, setTicket] = useState<Ticket | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const { data: ticket, isLoading, isError } = useTicket(id as string)
 
     useEffect(() => {
-        console.log("Editing ticket with ID:", id)
-        async function loadTicket() {
-            try {
-                const data = await ticketService.getTicket(id as string)
-                setTicket(data)
-            } catch (error) {
-                console.error("Failed to load ticket for editing", error)
-                router.push("/tickets") // or show 404
-            } finally {
-                setIsLoading(false)
-            }
+        if (isError) {
+            console.error("Failed to load ticket for editing")
+            router.push("/tickets") // or show 404
         }
-        loadTicket()
-    }, [id, router])
+    }, [isError, router])
 
     const handleSubmit = async (data: TicketFormValues) => {
         // Only update the fields managed by the form to avoid overwriting status/etc accidentally

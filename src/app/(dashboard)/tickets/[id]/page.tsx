@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
-import { ticketService } from "@/features/tickets/services/ticketService"
-import { Ticket } from "@/features/tickets/types"
+import { useTicket } from "@/features/tickets/hooks/useTickets"
 import { AppLoader } from "@/components/common/AppLoader"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -13,26 +12,14 @@ import { Button } from "@/components/ui/button"
 export default function ViewTicketPage() {
     const router = useRouter()
     const { id } = useParams()
-    const [ticket, setTicket] = useState<Ticket | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const { data: ticket, isLoading, isError } = useTicket(id as string)
 
     useEffect(() => {
-        async function loadTicket() {
-            try {
-                const data = await ticketService.getTicket(id as string)
-                if (!data) throw new Error("Ticket not found")
-                setTicket(data)
-            } catch (error) {
-                console.error("Failed to load ticket for viewing", error)
-                router.push("/tickets") // Redirect back to list on error
-            } finally {
-                setIsLoading(false)
-            }
+        if (isError) {
+            console.error("Failed to load ticket for viewing")
+            router.push("/tickets") // Redirect back to list on error
         }
-        if (id) {
-            loadTicket()
-        }
-    }, [id, router])
+    }, [isError, router])
 
     if (isLoading) {
         return (

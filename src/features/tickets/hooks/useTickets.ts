@@ -29,12 +29,18 @@ export const useTickets = () => {
   const editMutation = useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Ticket> }) => 
       ticketService.updateTicket(id, updates),
-    onSuccess: invalidateTickets,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets', variables.id] });
+    },
   });
 
   const removeMutation = useMutation({
     mutationFn: (id: string) => ticketService.deleteTicket(id),
-    onSuccess: invalidateTickets,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.removeQueries({ queryKey: ['tickets', variables] });
+    },
   });
 
   // Wrapping mutations to maintain the same API return format `{ error }`
@@ -75,4 +81,18 @@ export const useTickets = () => {
     removeTicket,
     refreshTickets: refetch,
   };
+};
+
+export const useTicket = (id: string) => {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: ['tickets', id],
+    queryFn: () => ticketService.getTicket(id),
+    initialData: () => {
+      // Find the ticket in the existing 'tickets' list cache
+      const tickets = queryClient.getQueryData<Ticket[]>(['tickets']);
+      return tickets?.find((t) => t.id === id);
+    },
+  });
 };
