@@ -15,6 +15,7 @@ export interface AppSelectProps<T extends FieldValues>
     extends Omit<FormFieldProps<T>, "children"> {
     options: { label: string; value: string }[];
     placeholder?: string;
+    disabled?: boolean;
 }
 
 /**
@@ -30,6 +31,7 @@ export function AppSelect<T extends FieldValues>({
     className,
     options,
     placeholder,
+    disabled,
 }: AppSelectProps<T>) {
     // using useController enforces strict controlled-component sync
     // bridging React Hook Form state directly to Radix's value/onValueChange
@@ -43,7 +45,7 @@ export function AppSelect<T extends FieldValues>({
             required={required}
             className={className}
         >
-            <Select onValueChange={field.onChange} defaultValue={field.value as string}>
+            <Select onValueChange={field.onChange} defaultValue={field.value as string} disabled={disabled}>
                 <SelectTrigger>
                     {/* The clone element logic in FormField relies on this wrapper forwarding `id` and `aria-*` props down implicitly if we spread. 
                          However, SelectTrigger natively grabs the props properly from context in modern Shadcn/Radix. */}

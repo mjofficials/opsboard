@@ -1,120 +1,83 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
 import { ticketService } from "@/features/tickets/services/ticketService"
-import { notFound } from "next/navigation"
+import { Ticket } from "@/features/tickets/types"
+import { AppLoader } from "@/components/common/AppLoader"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
-interface TicketPageProps {
-    params: {
-        id: string
-    }
-}
+export default function ViewTicketPage() {
+    const router = useRouter()
+    const { id } = useParams()
+    const [ticket, setTicket] = useState<Ticket | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
-export default async function ViewTicketPage({ params }: TicketPageProps) {
-    let ticket
-    try {
-        ticket = await ticketService.getTicket(params.id)
-    } catch (error) {
-        notFound()
+    useEffect(() => {
+        async function loadTicket() {
+            try {
+                const data = await ticketService.getTicket(id as string)
+                if (!data) throw new Error("Ticket not found")
+                setTicket(data)
+            } catch (error) {
+                console.error("Failed to load ticket for viewing", error)
+                router.push("/tickets") // Redirect back to list on error
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        if (id) {
+            loadTicket()
+        }
+    }, [id, router])
+
+    if (isLoading) {
+        return (
+            <AppLoader title="Loading ticket data..." description="Please wait while we load the ticket data." />
+        )
     }
 
     if (!ticket) {
-        notFound()
+        return null
     }
 
-    const priorityColors = {
-        low: "bg-slate-100 text-slate-800",
-        medium: "bg-blue-100 text-blue-800",
-        high: "bg-orange-100 text-orange-800",
-        urgent: "bg-red-100 text-red-800",
+    const statusColors: Record<string, string> = {
+        open: "bg-green-100 text-green-800 hover:bg-green-100",
+        in_progress: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
+        resolved: "bg-slate-100 text-slate-800 hover:bg-slate-100",
+        closed: "bg-slate-100 text-slate-800 hover:bg-slate-100",
     }
 
-    const statusColors = {
-        open: "bg-green-100 text-green-800",
-        in_progress: "bg-yellow-100 text-yellow-800",
-        resolved: "bg-slate-100 text-slate-800",
-        closed: "bg-slate-100 text-slate-800",
+    const initialData: TicketFormValues = {
+        title: ticket.title,
+        description: ticket.description || "",
+        priority: ticket.priority as any
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Ticket Details</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Viewing ticket #{ticket.id.slice(0, 8)}...
-                    </p>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold tracking-tight">View Ticket</h1>
+                    <Badge variant="secondary" className={statusColors[ticket.status] || ""}>
+                        {ticket.status.replace('-', ' ')}
+                    </Badge>
                 </div>
-                <div className="flex items-center gap-4">
-                    <Button variant="outline" asChild>
-                        <Link href="/tickets">Back to List</Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href={`/tickets/${ticket.id}/edit`}>Edit Ticket</Link>
-                    </Button>
-                </div>
+                <Button asChild variant="outline">
+                    <Link href={`/tickets/${ticket.id}/edit`}>Edit Ticket</Link>
+                </Button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-                <div className="md:col-span-2 space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <div className="flex justify-between items-start gap-4">
-                                <div>
-                                    <CardTitle className="text-2xl">{ticket.title}</CardTitle>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Badge variant="secondary" className={statusColors[ticket.status] || ""}>
-                                        {ticket.status.replace('-', ' ')}
-                                    </Badge>
-                                    <Badge variant="secondary" className={priorityColors[ticket.priority] || ""}>
-                                        {ticket.priority}
-                                    </Badge>
-                                </div>
-                            </div>
-                            <CardDescription>
-                                Created on {new Date(ticket.created_at).toLocaleDateString()}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="prose dark:prose-invert max-w-none">
-                                <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                                    {ticket.description}
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Metadata</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-sm">
-                            <div>
-                                <span className="text-muted-foreground block mb-1">Ticket ID</span>
-                                <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">
-                                    {ticket.id}
-                                </span>
-                            </div>
-                            <div>
-                                <span className="text-muted-foreground block mb-1">Created By</span>
-                                <span>{ticket.created_by}</span>
-                            </div>
-                            <div>
-                                <span className="text-muted-foreground block mb-1">Created At</span>
-                                <span>{new Date(ticket.created_at).toLocaleString()}</span>
-                            </div>
-                            <div>
-                                <span className="text-muted-foreground block mb-1">Last Updated</span>
-                                <span>{new Date(ticket.updated_at).toLocaleString()}</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
+            <TicketForm
+                initialData={initialData}
+                onSubmit={async () => { }}
+                title={`Ticket: ${ticket.title}`}
+                description={`Created on ${new Date(ticket.created_at).toLocaleDateString()} by ${ticket.created_by || 'Unknown'}`}
+                isReadOnly={true}
+            />
         </div>
     )
 }

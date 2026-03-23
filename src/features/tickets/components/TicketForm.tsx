@@ -24,6 +24,7 @@ interface TicketFormProps {
     title?: string
     description?: string
     submitText?: string
+    isReadOnly?: boolean
 }
 
 export function TicketForm({
@@ -32,7 +33,8 @@ export function TicketForm({
     onCancel,
     title = "Ticket Details",
     description = "Enter the details for this ticket.",
-    submitText = "Submit Ticket"
+    submitText = "Submit Ticket",
+    isReadOnly = false
 }: TicketFormProps) {
     const router = useRouter()
 
@@ -65,6 +67,7 @@ export function TicketForm({
                         name="title"
                         label="Subject / Title"
                         placeholder="E.g. Database connection timeouts"
+                        disabled={isReadOnly}
                     />
 
                     <AppSelect
@@ -77,21 +80,25 @@ export function TicketForm({
                             { value: "urgent", label: "Urgent" },
                         ]}
                         placeholder="Select Priority"
+                        disabled={isReadOnly}
                     />
 
                     <AppInput
                         name="description"
                         label="Detailed Description"
                         placeholder="Please describe the issue in detail..."
+                        disabled={isReadOnly}
                     />
                 </CardContent>
                 <CardFooter className="flex justify-end mt-5">
-                    <Button type="button" variant="outline" className="mr-4" onClick={handleCancel}>
-                        Cancel
+                    <Button type="button" variant={isReadOnly ? "default" : "outline"} className={isReadOnly ? "" : "mr-4"} onClick={handleCancel}>
+                        {isReadOnly ? "Back" : "Cancel"}
                     </Button>
-                    <Button type="submit">
-                        {submitText}
-                    </Button>
+                    {!isReadOnly && (
+                        <Button type="submit">
+                            {submitText}
+                        </Button>
+                    )}
                 </CardFooter>
             </AppForm>
         </Card>
