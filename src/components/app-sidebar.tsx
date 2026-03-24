@@ -8,7 +8,8 @@ import {
   LayoutDashboard,
   Settings2,
   Ticket,
-  User
+  User,
+  Users
 } from "lucide-react"
 import * as React from "react"
 import { usePathname } from "next/navigation"
@@ -46,6 +47,11 @@ const sidebarData = {
       title: "Tickets",
       url: "/tickets",
       icon: Ticket,
+    },
+    {
+      title: "Teams",
+      url: "/teams",
+      icon: Users,
     },
     {
       title: "Settings",
