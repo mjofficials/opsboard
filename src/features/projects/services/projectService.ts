@@ -27,12 +27,13 @@ export const projectService = {
 
   async createProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) {
     const supabase = createClient();
-    console.log("PROJECT PAYLOAD:", project);
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([project])
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('create_project_with_member', {
+      p_name: project.name,
+      p_description: project.description,
+      p_org_id: project.organization_id,
+      p_user_id: project.created_by,
+      p_status: project.status,
+    });
 
     if (error) throw error;
     return data as Project;
