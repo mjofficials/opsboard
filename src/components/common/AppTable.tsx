@@ -81,9 +81,9 @@ export function AppTable<TData, TValue>({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => handleView?.(row.original)}>View</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleEdit?.(row.original)}>Edit</DropdownMenuItem>
-                <DropdownMenuItem
+                {handleView && <DropdownMenuItem onClick={() => handleView?.(row.original)}>View</DropdownMenuItem>}
+                {handleEdit && <DropdownMenuItem onClick={() => handleEdit?.(row.original)}>Edit</DropdownMenuItem>}
+                {handleDelete && <DropdownMenuItem
                   onClick={() => {
                     setSelectedItemId(row.original)
                     setIsDeleteDialogOpen(true)
@@ -91,7 +91,7 @@ export function AppTable<TData, TValue>({
                   // Prevent the dropdown menu from closing when this item is selected
                   onSelect={(e) => e.preventDefault()}>
                   Delete
-                </DropdownMenuItem>
+                </DropdownMenuItem>}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>

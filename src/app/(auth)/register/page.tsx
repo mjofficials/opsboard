@@ -54,20 +54,21 @@ export default function RegisterPage() {
             name="name"
             label="Full Name"
             type="text"
-            placeholder="John Doe"
+            placeholder="Enter your full name"
             disabled={isLoading}
           />
           <AppInput
             name="email"
             label="Email"
             type="email"
-            placeholder="m@example.com"
+            placeholder="Enter your email"
             disabled={isLoading}
           />
           <AppInput
             name="password"
             label="Password"
             type="password"
+            placeholder="Enter your password"
             disabled={isLoading}
           />
         </CardContent>

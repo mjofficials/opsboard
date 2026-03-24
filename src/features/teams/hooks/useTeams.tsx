@@ -26,10 +26,24 @@ export const useTeams = () => {
         onSuccess: invalidateTeams,
     });
 
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => teamService.deleteTeamMember(id),
+        onSuccess: invalidateTeams,
+    });
+
     // Wrapping mutations to maintain the same API return format `{ error }`
     const addTeamMember = async (teamMemberData: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>) => {
         try {
             await addMutation.mutateAsync(teamMemberData);
+            return { error: null };
+        } catch (err: any) {
+            return { error: err.message };
+        }
+    };
+
+    const deleteTeamMember = async (id: string) => {
+        try {
+            await deleteMutation.mutateAsync(id);
             return { error: null };
         } catch (err: any) {
             return { error: err.message };
@@ -42,6 +56,7 @@ export const useTeams = () => {
         isError,
         error: error ? (error as Error).message : null,
         addTeamMember,
+        deleteTeamMember,
         refreshTeams: refetch,
     };
 };

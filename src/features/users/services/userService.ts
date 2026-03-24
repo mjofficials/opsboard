@@ -54,9 +54,9 @@ export const userService = {
   async deleteUser(id: string) {
     const supabase = createClient();
     const { error } = await supabase
-      .from('profiles')
+      .from('organization_members')
       .delete()
-      .eq('id', id);
+      .eq('user_id', id);
 
     if (error) throw error;
   }

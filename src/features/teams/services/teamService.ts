@@ -28,4 +28,15 @@ export const teamService = {
     if (error) throw error;
     return data as TeamMember;
   },
+
+  async deleteTeamMember(id: string) {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('invitations')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { error: null };
+  },
 };

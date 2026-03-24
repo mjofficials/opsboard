@@ -2,43 +2,24 @@
 
 import { AppTable } from "@/components/common/AppTable";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { useTeams } from "@/features/teams/hooks/useTeams";
-import { ColumnDef } from "@tanstack/react-table"
 import { TeamMember } from "@/features/teams/types";
-import { toast } from "sonner";
+import { ColumnDef } from "@tanstack/react-table";
 import { UserPlusIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldGroup } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useState } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select";
-import { AppForm } from "@/components/form/AppForm";
-import InviteModal, { InviteFormValues } from "@/features/teams/components/inviteModal";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import InviteModal, { InviteFormValues } from "@/features/teams/components/inviteModal";
+import { useState } from "react";
 
 export default function TeamsPage() {
   const router = useRouter();
   const { user } = useAuth()
-  const { teams, isLoading, isError, error, addTeamMember } = useTeams()
+  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams()
   const [isOpen, setIsOpen] = useState(false)
 
   const columns: ColumnDef<TeamMember>[] = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
     {
       accessorKey: "email",
       header: "Email",
@@ -49,6 +30,15 @@ export default function TeamsPage() {
       cell: ({ row }) => (
         <span className="capitalize px-2 py-1 rounded border text-xs bg-muted">
           {row.getValue("role")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span className="capitalize px-2 py-1 rounded border text-xs bg-muted">
+          {row.getValue("status")}
         </span>
       ),
     },
@@ -81,6 +71,12 @@ export default function TeamsPage() {
 
   const handleDelete = async (id: string) => {
     console.log(id)
+    const { error } = await deleteTeamMember(id)
+    if (!error) {
+      toast.success("Team member deleted successfully")
+    } else {
+      toast.error("Failed to delete team member")
+    }
   }
 
   if (isError) {
@@ -108,8 +104,6 @@ export default function TeamsPage() {
         <AppTable
           columns={columns}
           data={teams || []}
-          handleView={(args) => router.push(`/teams/${args.id}`)}
-          handleEdit={(args) => router.push(`/teams/${args.id}/edit`)}
           handleDelete={(args) => handleDelete(args.id)}
         />
       )}
