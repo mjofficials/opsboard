@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   const handleLogin = async (data: LoginFormValues) => {
     const { error: loginError } = await login(data.email, data.password);
-    
+
     if (!loginError) {
       router.push("/dashboard");
     }
@@ -53,7 +53,7 @@ export default function LoginPage() {
             name="email"
             label="Email"
             type="email"
-            placeholder="m@example.com"
+            placeholder="Enter your email"
             disabled={isLoading}
           />
           <div className="relative mb-4">
@@ -61,10 +61,11 @@ export default function LoginPage() {
               name="password"
               label="Password"
               type="password"
+              placeholder="Enter your password"
               disabled={isLoading}
             />
-            <Link 
-              href="#" 
+            <Link
+              href="#"
               className="absolute right-0 -top-1.5 text-sm font-medium text-primary hover:underline"
             >
               Forgot password?
@@ -83,7 +84,7 @@ export default function LoginPage() {
           </div>
         </CardFooter>
       </AppForm>
-      
+
     </Card>
   );
 }
