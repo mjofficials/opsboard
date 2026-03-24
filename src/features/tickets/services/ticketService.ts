@@ -9,6 +9,11 @@ export const ticketService = {
       .select('*')
       .order('created_at', { ascending: false });
 
+    const { data: user, error: userError } = await supabase.auth.getUser()
+
+    console.log("DATA:", data);
+    console.log("USER:", user?.user?.id);
+
     if (error) throw error;
     return data as Ticket[];
   },

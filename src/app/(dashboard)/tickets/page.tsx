@@ -13,10 +13,10 @@ export default function TicketsPage() {
   const { tickets, isLoading, isError, error, removeTicket } = useTickets()
 
   const priorityColorMap: Record<TicketPriority, string> = {
-    low: "bg-green-100 text-green-800 border-green-200",
-    medium: "bg-blue-100 text-blue-800 border-blue-200",
-    high: "bg-purple-100 text-purple-800 border-purple-200",
-    urgent: "bg-red-100 text-red-800 border-red-200",
+    LOW: "bg-green-100 text-green-800 border-green-200",
+    MEDIUM: "bg-blue-100 text-blue-800 border-blue-200",
+    HIGH: "bg-purple-100 text-purple-800 border-purple-200",
+    URGENT: "bg-red-100 text-red-800 border-red-200",
   }
 
   const columns: ColumnDef<Ticket>[] = [

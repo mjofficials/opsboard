@@ -12,8 +12,8 @@ import { AppSelect } from "@/components/form/inputs/AppSelect"
 export const ticketSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     description: z.string().min(10, "Please provide a detailed description (minimum 10 characters)"),
-    status: z.enum(['open', 'in_progress', 'resolved', 'closed'] as const),
-    priority: z.enum(['low', 'medium', 'high', 'urgent'] as const),
+    status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const),
+    priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const),
 })
 
 export type TicketFormValues = z.infer<typeof ticketSchema>
@@ -60,8 +60,8 @@ export function TicketForm({
                 defaultValues={initialData || {
                     title: "",
                     description: "",
-                    status: "open",
-                    priority: "medium"
+                    status: "OPEN",
+                    priority: "MEDIUM"
                 }}
             >
                 <CardContent className="space-y-4">
@@ -76,10 +76,10 @@ export function TicketForm({
                         name="status"
                         label="Status"
                         options={[
-                            { value: "open", label: "Open" },
-                            { value: "in_progress", label: "In Progress" },
-                            { value: "resolved", label: "Resolved" },
-                            { value: "closed", label: "Closed" },
+                            { value: "OPEN", label: "Open" },
+                            { value: "IN_PROGRESS", label: "In Progress" },
+                            { value: "RESOLVED", label: "Resolved" },
+                            { value: "CLOSED", label: "Closed" },
                         ]}
                         placeholder="Select Status"
                         disabled={isReadOnly}
@@ -89,10 +89,10 @@ export function TicketForm({
                         name="priority"
                         label="Priority Level"
                         options={[
-                            { value: "low", label: "Low" },
-                            { value: "medium", label: "Medium" },
-                            { value: "high", label: "High" },
-                            { value: "urgent", label: "Urgent" },
+                            { value: "LOW", label: "Low" },
+                            { value: "MEDIUM", label: "Medium" },
+                            { value: "HIGH", label: "High" },
+                            { value: "URGENT", label: "Urgent" },
                         ]}
                         placeholder="Select Priority"
                         disabled={isReadOnly}
