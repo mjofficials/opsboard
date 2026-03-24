@@ -64,7 +64,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
             <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleLogout()}>Logout</Button>
             {/* User */}
             <NavUser user={{
-              name: "User",
+              name: user?.user_metadata?.name || "User",
               email: user?.email || "No Email",
               avatar: "/avatars/shadcn.jpg"
             }} />
