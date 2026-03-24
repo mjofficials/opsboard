@@ -27,6 +27,7 @@ export const projectService = {
 
   async createProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) {
     const supabase = createClient();
+    console.log("PROJECT PAYLOAD:", project);
     const { data, error } = await supabase
       .from('projects')
       .insert([project])

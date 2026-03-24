@@ -15,14 +15,18 @@ export default function NewProjectPage() {
   const { addProject } = useProjects()
 
   const handleSubmit = async (data: ProjectFormValues) => {
-    if (!user?.id) return
+    if (!user?.id || !user?.organization_id) {
+      toast.error("User does not have an active organization")
+      return
+    }
 
     // Setup base project metadata payload
     const newProject = {
       name: data.title,
       description: data.description,
       status: data.status as ProjectStatus,
-      created_by: user.id
+      created_by: user.id,
+      organization_id: user.organization_id
     }
 
     const { error } = await addProject(newProject)

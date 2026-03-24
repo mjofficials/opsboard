@@ -1,4 +1,9 @@
-import { User, Session } from '@supabase/supabase-js';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+
+export interface User extends SupabaseUser {
+  organization_id?: string;
+  role?: string;
+}
 
 export interface AuthState {
   user: User | null;
@@ -7,4 +12,4 @@ export interface AuthState {
   error: string | null;
 }
 
-export type { User, Session };
+export type { Session };

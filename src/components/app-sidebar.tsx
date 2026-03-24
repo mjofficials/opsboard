@@ -1,6 +1,8 @@
 "use client"
 
 import {
+  AudioWaveform,
+  Command,
   Folder,
   GalleryVerticalEnd,
   LayoutDashboard,
@@ -21,6 +23,7 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from "@/components/ui/sidebar"
+import { TeamSwitcher } from "@/components/team-switcher"
 
 const sidebarData = {
   navMain: [
@@ -50,6 +53,20 @@ const sidebarData = {
       icon: Settings2,
     }
   ],
+  teams: [
+    {
+      name: "OpsBoard",
+      logo: GalleryVerticalEnd,
+    },
+    {
+      name: "Acme Corp.",
+      logo: AudioWaveform,
+    },
+    {
+      name: "Evil Corp.",
+      logo: Command,
+    },
+  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -58,20 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">OpsBoard</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <TeamSwitcher teams={sidebarData.teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain

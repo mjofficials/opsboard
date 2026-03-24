@@ -22,7 +22,7 @@ export default function RegisterPage() {
   const { register, isLoading, error } = useAuth();
 
   const handleRegister = async (data: RegisterFormValues) => {
-    const { error: registerError } = await register(data.email, data.password);
+    const { error: registerError } = await register(data.name, data.email, data.password);
 
     if (!registerError) {
       router.push("/dashboard");

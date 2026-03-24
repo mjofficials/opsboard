@@ -18,11 +18,11 @@ export const useAuth = () => {
     try {
       const { data: { session }, error } = await authService.getCurrentSession();
       if (error) throw error;
-      
+
       if (session) {
         dispatch(setAuthSession({ session, user: session.user }));
       } else {
-         dispatch(clearAuthSession());
+        dispatch(clearAuthSession());
       }
     } catch (err: any) {
       dispatch(setAuthError(err.message));
@@ -60,9 +60,9 @@ export const useAuth = () => {
     return { data };
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (name: string, email: string, password: string) => {
     dispatch(setAuthLoading());
-    const { data, error } = await authService.register(email, password);
+    const { data, error } = await authService.register(name, email, password);
     if (error) {
       dispatch(setAuthError(error.message));
       return { error };
