@@ -8,10 +8,12 @@ import {
   clearAuthSession,
 } from '../authSlice';
 import { createClient } from '@/lib/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { user, session, status, error } = useAppSelector((state) => state.auth);
+  const queryClient = useQueryClient();
 
   const initAuth = useCallback(async () => {
     dispatch(setAuthLoading());
@@ -22,12 +24,13 @@ export const useAuth = () => {
       if (session) {
         dispatch(setAuthSession({ session, user: session.user }));
       } else {
+        queryClient.clear();
         dispatch(clearAuthSession());
       }
     } catch (err: any) {
       dispatch(setAuthError(err.message));
     }
-  }, [dispatch]);
+  }, [dispatch, queryClient]);
 
   // Set up auth state listener
   useEffect(() => {
@@ -39,6 +42,7 @@ export const useAuth = () => {
         if (session) {
           dispatch(setAuthSession({ session, user: session.user }));
         } else {
+          queryClient.clear();
           dispatch(clearAuthSession());
         }
       }
@@ -47,7 +51,7 @@ export const useAuth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, initAuth]);
+  }, [dispatch, initAuth, queryClient]);
 
   const login = async (email: string, password: string) => {
     dispatch(setAuthLoading());
@@ -77,6 +81,7 @@ export const useAuth = () => {
       dispatch(setAuthError(error.message));
       return { error };
     }
+    queryClient.clear();
     dispatch(clearAuthSession());
   };
 
