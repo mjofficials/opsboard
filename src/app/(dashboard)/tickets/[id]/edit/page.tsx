@@ -54,7 +54,8 @@ export default function EditTicketPage() {
         title: ticket.title,
         description: ticket.description || "",
         status: ticket.status as TicketStatus,
-        priority: ticket.priority as TicketPriority
+        priority: ticket.priority as TicketPriority,
+        project_id: ticket.project_id
     }
 
     return (

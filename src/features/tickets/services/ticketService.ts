@@ -5,7 +5,7 @@ export const ticketService = {
   async getTickets() {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from('tickets')
+      .from('tickets_with_project_details')
       .select('*')
       .order('created_at', { ascending: false });
 

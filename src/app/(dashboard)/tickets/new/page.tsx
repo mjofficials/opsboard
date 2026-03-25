@@ -23,7 +23,8 @@ export default function NewTicketPage() {
       description: data.description,
       priority: data.priority as TicketPriority,
       status: data.status as TicketStatus,
-      created_by: user.id
+      created_by: user.id,
+      project_id: data.project_id
     }
 
     const { error } = await addTicket(newTicket)

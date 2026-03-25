@@ -25,6 +25,10 @@ export default function TicketsPage() {
       header: "Title",
     },
     {
+      accessorKey: "project_name",
+      header: "Project",
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (

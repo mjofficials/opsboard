@@ -1,11 +1,14 @@
 import * as React from "react";
 import { useFormContext, type FieldValues } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { FormField, type FormFieldProps } from "../FormField";
 
 export interface AppInputProps<T extends FieldValues>
-    extends Omit<React.ComponentProps<"input">, "name">,
-    Omit<FormFieldProps<T>, "children"> { }
+    extends Omit<React.ComponentProps<"input">, "name" | "type">,
+    Omit<FormFieldProps<T>, "children"> {
+        type?: React.ComponentProps<"input">["type"] | "textarea";
+    }
 
 /**
  * Standard native text input RHF wrapper.
@@ -18,6 +21,7 @@ export function AppInput<T extends FieldValues>({
     description,
     required,
     className,
+    type,
     ...inputProps
 }: AppInputProps<T>) {
     const { register } = useFormContext<T>();
@@ -30,7 +34,11 @@ export function AppInput<T extends FieldValues>({
             required={required}
             className={className}
         >
-            <Input {...register(name)} {...inputProps} />
+            {type === "textarea" ? (
+                <Textarea {...register(name)} {...(inputProps as React.ComponentProps<"textarea">)} />
+            ) : (
+                <Input type={type} {...register(name)} {...inputProps} />
+            )}
         </FormField>
     );
 }

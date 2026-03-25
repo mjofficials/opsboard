@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button"
 import { AppForm } from "@/components/form/AppForm"
 import { AppInput } from "@/components/form/inputs/AppInput"
 import { AppSelect } from "@/components/form/inputs/AppSelect"
+import { useProjects } from "@/features/projects/hooks/useProjects"
+import { TicketPriority, TicketStatus } from "../enums"
 
 export const ticketSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
-    description: z.string().min(10, "Please provide a detailed description (minimum 10 characters)"),
+    description: z.string(),
     status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const),
     priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const),
+    project_id: z.string().min(1, "Project is required"),
 })
 
 export type TicketFormValues = z.infer<typeof ticketSchema>
@@ -37,7 +40,9 @@ export function TicketForm({
     submitText = "Submit Ticket",
     isReadOnly = false
 }: TicketFormProps) {
-    const router = useRouter()
+    const router = useRouter();
+
+    const { projects, isLoading } = useProjects();
 
     const handleCancel = () => {
         if (onCancel) {
@@ -61,49 +66,65 @@ export function TicketForm({
                     title: "",
                     description: "",
                     status: "OPEN",
-                    priority: "MEDIUM"
+                    priority: "MEDIUM",
+                    project_id: ""
                 }}
             >
                 <CardContent className="space-y-4">
-                    <AppInput
-                        name="title"
-                        label="Subject / Title"
-                        placeholder="E.g. Database connection timeouts"
-                        disabled={isReadOnly}
-                    />
+                    <div className="grid grid-cols-2 gap-4">
+                        <AppInput
+                            name="title"
+                            label="Ticket Title"
+                            placeholder="Enter ticket title"
+                            disabled={isReadOnly}
+                            required
+                        />
 
-                    <AppSelect
-                        name="status"
-                        label="Status"
-                        options={[
-                            { value: "OPEN", label: "Open" },
-                            { value: "IN_PROGRESS", label: "In Progress" },
-                            { value: "RESOLVED", label: "Resolved" },
-                            { value: "CLOSED", label: "Closed" },
-                        ]}
-                        placeholder="Select Status"
-                        disabled={isReadOnly}
-                    />
+                        <AppSelect
+                            name="project_id"
+                            label="Project"
+                            options={projects?.map((project) => ({
+                                value: project.id,
+                                label: project.name,
+                            })) || []}
+                            placeholder="Select Project"
+                            disabled={isReadOnly || isLoading}
+                            required
+                        />
 
-                    <AppSelect
-                        name="priority"
-                        label="Priority Level"
-                        options={[
-                            { value: "LOW", label: "Low" },
-                            { value: "MEDIUM", label: "Medium" },
-                            { value: "HIGH", label: "High" },
-                            { value: "URGENT", label: "Urgent" },
-                        ]}
-                        placeholder="Select Priority"
-                        disabled={isReadOnly}
-                    />
+                        <AppSelect
+                            name="status"
+                            label="Status"
+                            options={Object.values(TicketStatus).map((status) => ({
+                                value: status,
+                                label: status.toLowerCase(),
+                            }))}
+                            placeholder="Select Status"
+                            disabled={isReadOnly}
+                            required
+                        />
 
-                    <AppInput
-                        name="description"
-                        label="Detailed Description"
-                        placeholder="Please describe the issue in detail..."
-                        disabled={isReadOnly}
-                    />
+                        <AppSelect
+                            name="priority"
+                            label="Priority Level"
+                            options={Object.values(TicketPriority).map((priority) => ({
+                                value: priority,
+                                label: priority.toLowerCase(),
+                            }))}
+                            placeholder="Select Priority"
+                            disabled={isReadOnly}
+                            required
+                        />
+
+                        <AppInput
+                            type="textarea"
+                            name="description"
+                            label="Detailed Description"
+                            placeholder="Please describe the issue in detail..."
+                            disabled={isReadOnly}
+                            className="col-span-2"
+                        />
+                    </div>
                 </CardContent>
                 <CardFooter className="flex justify-end mt-5">
                     <Button type="button" variant={isReadOnly ? "default" : "outline"} className={isReadOnly ? "" : "mr-4"} onClick={handleCancel}>
