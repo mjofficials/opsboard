@@ -59,8 +59,9 @@ export const ticketService = {
     const supabase = createClient();
     const { error } = await supabase
       .from('tickets')
-      .delete()
-      .eq('id', id);
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+      .select();
 
     if (error) throw error;
   }
