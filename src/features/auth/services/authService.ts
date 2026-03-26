@@ -57,7 +57,7 @@ export const authService = {
   async getCurrentSession() {
     const supabase = createClient();
     const { data: sessionData, error } = await supabase.auth.getSession();
-
+    console.log('sessionData', sessionData);
     if (sessionData.session?.user) {
       const { data: orgData } = await supabase
         .from('organization_members')

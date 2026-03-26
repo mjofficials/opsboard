@@ -89,7 +89,9 @@ export const useProject = (id: string) => {
     return useQuery({
         queryKey: ['projects', id],
         queryFn: () => projectService.getProject(id),
+        enabled: !!id,
         initialData: () => {
+            if (!id) return undefined;
             // Find the project in the existing 'projects' list cache
             const projects = queryClient.getQueryData<Project[]>(['projects']);
             return projects?.find((project) => project.id === id);

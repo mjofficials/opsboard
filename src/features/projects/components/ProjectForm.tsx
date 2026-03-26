@@ -36,15 +36,8 @@ export function ProjectForm({
     submitText = "Submit Project",
     isReadOnly = false
 }: ProjectFormProps) {
-    const router = useRouter()
 
-    const handleCancel = () => {
-        if (onCancel) {
-            onCancel()
-        } else {
-            router.back()
-        }
-    }
+    const handleCancel = () => onCancel?.();
 
     return (
         <Card className="border-0 shadow-sm dark:border-zinc-800 sm:border">
@@ -90,7 +83,7 @@ export function ProjectForm({
                 </CardContent>
                 <CardFooter className="flex justify-end mt-5">
                     <Button type="button" variant={isReadOnly ? "default" : "outline"} className={isReadOnly ? "" : "mr-4"} onClick={handleCancel}>
-                        {isReadOnly ? "Back" : "Cancel"}
+                        {isReadOnly ? "Close" : "Cancel"}
                     </Button>
                     {!isReadOnly && (
                         <Button type="submit">
