@@ -1,13 +1,13 @@
 "use client"
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppForm } from "@/components/form/AppForm";
 import { AppInput } from "@/components/form/inputs/AppInput";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address").min(1, "Email is required"),
