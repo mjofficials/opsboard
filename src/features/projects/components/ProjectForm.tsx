@@ -11,7 +11,7 @@ import { AppSelect } from "@/components/form/inputs/AppSelect"
 
 export const projectSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
-    description: z.string().min(10, "Please provide a detailed description (minimum 10 characters)"),
+    description: z.string(),
     status: z.enum(['ACTIVE', 'INACTIVE'] as const),
 })
 
@@ -61,6 +61,7 @@ export function ProjectForm({
                         label="Subject / Title"
                         placeholder="E.g. New project"
                         disabled={isReadOnly}
+                        required
                     />
 
                     <AppSelect
@@ -72,6 +73,7 @@ export function ProjectForm({
                         ]}
                         placeholder="Select Status"
                         disabled={isReadOnly}
+                        required
                     />
 
                     <AppInput

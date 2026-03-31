@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { authService } from '../services/authService';
 import {
@@ -32,15 +32,25 @@ export const useAuth = () => {
     }
   }, [dispatch, queryClient]);
 
+  // Keep track of whether we've initialized auth to prevent duplicate calls
+  const initRef = useRef(false);
+
   // Set up auth state listener
   useEffect(() => {
-    initAuth();
+    if (status === 'idle' && !initRef.current) {
+      initRef.current = true;
+      initAuth();
+    }
 
     const supabase = createClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
+        if (event === 'INITIAL_SESSION') return;
+
         if (session) {
-          dispatch(setAuthSession({ session, user: session.user }));
+          // Do not dispatch raw session, as it lacks role/org data.
+          // initAuth will fetch the decorated session and update Redux without clearing the current user.
+          initAuth();
         } else {
           queryClient.clear();
           dispatch(clearAuthSession());

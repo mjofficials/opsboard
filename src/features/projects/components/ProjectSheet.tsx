@@ -163,6 +163,7 @@ export function ProjectSheet({
       <SheetContent
         className="flex flex-col gap-0 p-0 sm:max-w-md overflow-y-auto"
         side="right"
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {/* Primary accent bar — design anchor */}
         <div className="h-0.5 w-full bg-primary shrink-0" />
