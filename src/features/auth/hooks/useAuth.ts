@@ -98,7 +98,7 @@ export const useAuth = () => {
   const createOrganization = async (name: string) => {
     if (!user?.id) return { error: new Error('Not authenticated') };
     dispatch(setAuthLoading());
-    const { data, error } = await authService.createOrganization(name, user.id);
+    const { data, error } = await authService.createOrganization(name);
     if (error) {
       dispatch(setAuthError(error.message));
       return { error };

@@ -91,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain
-          items={sidebarData.navMain.map(item => ({ ...item, isActive: pathname.startsWith(item.url) }))}
+          items={sidebarData.navMain.map(item => ({ ...item, isActive: pathname === item.url || pathname.startsWith(item.url + '/') }))}
         />
       </SidebarContent>
       <SidebarRail />
