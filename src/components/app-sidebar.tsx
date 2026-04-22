@@ -6,6 +6,7 @@ import {
   Folder,
   GalleryVerticalEnd,
   LayoutDashboard,
+  MessageSquare,
   Settings2,
   Ticket,
   User,
@@ -47,6 +48,11 @@ const sidebarData = {
       title: "Tickets",
       url: "/tickets",
       icon: Ticket,
+    },
+    {
+      title: "Ticket Comments",
+      url: "/tickets-comments",
+      icon: MessageSquare
     },
     {
       title: "Teams",
