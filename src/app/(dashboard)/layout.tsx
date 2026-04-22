@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect } from "react"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import { NavUser } from "@/components/nav-user"
 import { Button } from "@/components/ui/button"
@@ -23,11 +25,30 @@ import { useAuth } from "@/features/auth/hooks/useAuth"
 export default function Page({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { setTheme } = useTheme()
-  const { user, logout } = useAuth()
+  const { user, session, isLoading, logout } = useAuth()
+
+  useEffect(() => {
+    // Wait until auth has fully resolved before making guard decisions
+    if (isLoading) return;
+
+    if (!session) {
+      router.replace('/login');
+      return;
+    }
+
+    if (!user?.organization_id) {
+      router.replace('/onboarding');
+    }
+  }, [session, user, isLoading, router]);
 
   const handleLogout = async () => {
     await logout();
     router.push("/login");
+  }
+
+  // Render nothing while auth is resolving or a redirect is pending
+  if (isLoading || !session || !user?.organization_id) {
+    return null;
   }
 
   return (

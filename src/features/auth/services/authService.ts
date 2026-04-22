@@ -90,4 +90,18 @@ export const authService = {
     const supabase = createClient();
     return supabase.auth.getUser();
   },
+
+  async createOrganization(name: string) {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.rpc('create_organization', {
+      org_name: name
+    });
+
+    if (error) {
+      return { data: null, error: error };
+    }
+
+    return { data, error: null };
+  },
 };

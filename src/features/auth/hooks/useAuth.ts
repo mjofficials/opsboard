@@ -95,6 +95,19 @@ export const useAuth = () => {
     dispatch(clearAuthSession());
   };
 
+  const createOrganization = async (name: string) => {
+    if (!user?.id) return { error: new Error('Not authenticated') };
+    dispatch(setAuthLoading());
+    const { data, error } = await authService.createOrganization(name, user.id);
+    if (error) {
+      dispatch(setAuthError(error.message));
+      return { error };
+    }
+    // Re-hydrate Redux: getCurrentSession will now find the org and decorate user
+    await initAuth();
+    return { data };
+  };
+
   return {
     user,
     session,
@@ -103,5 +116,6 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    createOrganization,
   };
 };
