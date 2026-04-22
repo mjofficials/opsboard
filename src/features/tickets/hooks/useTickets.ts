@@ -21,13 +21,13 @@ export const useTickets = () => {
   };
 
   const addMutation = useMutation({
-    mutationFn: (ticketData: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) => 
+    mutationFn: (ticketData: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) =>
       ticketService.createTicket(ticketData),
     onSuccess: invalidateTickets,
   });
 
   const editMutation = useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Ticket> }) => 
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Ticket> }) =>
       ticketService.updateTicket(id, updates),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
@@ -89,7 +89,9 @@ export const useTicket = (id: string) => {
   return useQuery({
     queryKey: ['tickets', id],
     queryFn: () => ticketService.getTicket(id),
+    enabled: !!id,
     initialData: () => {
+      if (!id) return undefined;
       // Find the ticket in the existing 'tickets' list cache
       const tickets = queryClient.getQueryData<Ticket[]>(['tickets']);
       return tickets?.find((t) => t.id === id);

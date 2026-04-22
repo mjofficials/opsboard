@@ -5,14 +5,9 @@ export const ticketService = {
   async getTickets() {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from('tickets_with_project_details')
+      .from('tickets')
       .select('*')
       .order('created_at', { ascending: false });
-
-    const { data: user, error: userError } = await supabase.auth.getUser()
-
-    console.log("DATA:", data);
-    console.log("USER:", user?.user?.id);
 
     if (error) throw error;
     return data as Ticket[];
@@ -59,9 +54,8 @@ export const ticketService = {
     const supabase = createClient();
     const { error } = await supabase
       .from('tickets')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .select();
+      .delete()
+      .eq('id', id);
 
     if (error) throw error;
   }

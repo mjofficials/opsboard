@@ -2,15 +2,25 @@
 
 import { AppTable } from "@/components/common/AppTable"
 import { Button } from "@/components/ui/button"
+import { TicketSheet, TicketSheetMode } from "@/features/tickets/components/TicketSheet"
 import { useTickets } from "@/features/tickets/hooks/useTickets"
 import { Ticket, TicketPriority } from "@/features/tickets/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { toast } from "sonner"
+
+interface SheetState {
+  open: boolean
+  mode: TicketSheetMode
+  ticketId?: string
+}
+const CLOSED: SheetState = { open: false, mode: "create" }
 
 export default function TicketsPage() {
   const router = useRouter()
   const { tickets, isLoading, isError, error, removeTicket } = useTickets()
+  const [sheet, setSheet] = useState<SheetState>(CLOSED)
 
   const priorityColorMap: Record<TicketPriority, string> = {
     LOW: "bg-green-100 text-green-800 border-green-200",
@@ -56,6 +66,9 @@ export default function TicketsPage() {
     }
   ];
 
+  const openSheet = (mode: TicketSheetMode, ticketId?: string) =>
+    setSheet({ open: true, mode, ticketId })
+
   const handleDelete = async (id: string) => {
     const { error } = await removeTicket(id)
     if (!error) {
@@ -75,7 +88,7 @@ export default function TicketsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Tickets</h1>
-        <Button onClick={() => router.push("/tickets/new")}>
+        <Button onClick={() => openSheet("create")}>
           Create Ticket
         </Button>
       </div>
@@ -86,11 +99,22 @@ export default function TicketsPage() {
         <AppTable
           columns={columns}
           data={tickets || []}
-          handleView={(args) => router.push(`/tickets/${args.id}`)}
-          handleEdit={(args) => router.push(`/tickets/${args.id}/edit`)}
-          handleDelete={(args) => handleDelete(args.id)}
+          handleView={(row) => openSheet("view", row.id)}
+          handleEdit={(row) => openSheet("edit", row.id)}
+          handleDelete={(row) => handleDelete(row.id)}
         />
       )}
+
+      {/* Ticket Sheet */}
+      <TicketSheet
+        open={sheet.open}
+        mode={sheet.mode}
+        ticketId={sheet.ticketId}
+        onOpenChange={(open) => {
+          if (!open) setSheet(CLOSED)
+          else setSheet((s) => ({ ...s, open: true }))
+        }}
+      />
     </div>
   )
 }

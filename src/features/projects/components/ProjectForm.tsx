@@ -11,8 +11,8 @@ import { AppSelect } from "@/components/form/inputs/AppSelect"
 
 export const projectSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
-    description: z.string(),
-    status: z.enum(['ACTIVE', 'INACTIVE'] as const),
+    // description: z.string(),
+    // status: z.enum(['ACTIVE', 'INACTIVE'] as const),
 })
 
 export type ProjectFormValues = z.infer<typeof projectSchema>
@@ -51,8 +51,8 @@ export function ProjectForm({
                 onSubmit={onSubmit}
                 defaultValues={initialData || {
                     title: "",
-                    description: "",
-                    status: "ACTIVE"
+                    // description: "",
+                    // status: "ACTIVE"
                 }}
             >
                 <CardContent className="space-y-4">
@@ -64,7 +64,7 @@ export function ProjectForm({
                         required
                     />
 
-                    <AppSelect
+                    {/* <AppSelect
                         name="status"
                         label="Status"
                         options={[
@@ -81,7 +81,7 @@ export function ProjectForm({
                         label="Detailed Description"
                         placeholder="Please describe the project in detail..."
                         disabled={isReadOnly}
-                    />
+                    /> */}
                 </CardContent>
                 <CardFooter className="flex justify-end mt-5">
                     <Button type="button" variant={isReadOnly ? "default" : "outline"} className={isReadOnly ? "" : "mr-4"} onClick={handleCancel}>

@@ -58,20 +58,16 @@ function ProjectFormSkeleton() {
 
 const HEADER: Record<
   ProjectSheetMode,
-  { title: (name?: string) => string; description: string }
+  { title: (name?: string) => string }
 > = {
   create: {
     title: () => "New Project",
-    description:
-      "Fill in the details below. The project will be visible to all members of your organization immediately.",
   },
   view: {
     title: (name) => `View Project: ${name}`,
-    description: "Read-only snapshot of this project.",
   },
   edit: {
     title: (name) => `Edit Project: ${name}`,
-    description: "Update the fields below and save your changes.",
   },
 }
 
@@ -100,8 +96,8 @@ export function ProjectSheet({
     !isCreate && project
       ? {
         title: project.name,
-        description: project.description ?? "",
-        status: project.status as ProjectStatus,
+        // description: project.description ?? "",
+        // status: project.status as ProjectStatus,
       }
       : undefined
 
@@ -122,9 +118,6 @@ export function ProjectSheet({
     setIsPending(true)
     const { error } = await addProject({
       name: data.title,
-      description: data.description,
-      status: data.status as ProjectStatus,
-      created_by: user.id,
       organization_id: user.organization_id,
     })
     setIsPending(false)
@@ -143,8 +136,8 @@ export function ProjectSheet({
     setIsPending(true)
     const { error } = await editProject(projectId, {
       name: data.title,
-      description: data.description,
-      status: data.status as ProjectStatus,
+      // description: data.description,
+      // status: data.status as ProjectStatus,
     })
     setIsPending(false)
 
@@ -174,7 +167,7 @@ export function ProjectSheet({
               {header.title(project?.name)}
             </SheetTitle>
 
-            {!isCreate && project && (
+            {/* {!isCreate && project && (
               <Badge
                 variant="secondary"
                 className={`text-[10px] px-1.5 py-0 ${STATUS_CLASSES[project.status] ?? ""
@@ -182,12 +175,8 @@ export function ProjectSheet({
               >
                 {project.status}
               </Badge>
-            )}
+            )} */}
           </div>
-
-          <SheetDescription className="text-sm">
-            {header.description}
-          </SheetDescription>
         </SheetHeader>
 
         <Separator />
