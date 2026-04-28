@@ -1,5 +1,5 @@
-export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE';
+export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH';
 
 export interface Ticket {
   id: string;

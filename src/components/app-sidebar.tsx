@@ -45,16 +45,6 @@ const sidebarData = {
       icon: Folder,
     },
     {
-      title: "Tickets",
-      url: "/tickets",
-      icon: Ticket,
-    },
-    {
-      title: "Ticket Comments",
-      url: "/tickets-comments",
-      icon: MessageSquare
-    },
-    {
       title: "Teams",
       url: "/teams",
       icon: Users,

@@ -10,12 +10,13 @@ import { AppInput } from "@/components/form/inputs/AppInput"
 import { AppSelect } from "@/components/form/inputs/AppSelect"
 import { useProjects } from "@/features/projects/hooks/useProjects"
 import { TicketPriority, TicketStatus } from "../enums"
+import { toTitleCase } from "@/lib/utils"
 
 export const ticketSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     description: z.string(),
-    status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const),
-    priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const),
+    status: z.enum(["OPEN", "IN_PROGRESS", "DONE"] as const),
+    priority: z.enum(["LOW", "MEDIUM", "HIGH"] as const),
     project_id: z.string().min(1, "Project is required"),
 })
 
@@ -97,7 +98,7 @@ export function TicketForm({
                             label="Status"
                             options={Object.values(TicketStatus).map((status) => ({
                                 value: status,
-                                label: status.toLowerCase(),
+                                label: toTitleCase(status),
                             }))}
                             placeholder="Select Status"
                             disabled={isReadOnly}
@@ -109,7 +110,7 @@ export function TicketForm({
                             label="Priority Level"
                             options={Object.values(TicketPriority).map((priority) => ({
                                 value: priority,
-                                label: priority.toLowerCase(),
+                                label: toTitleCase(priority),
                             }))}
                             placeholder="Select Priority"
                             disabled={isReadOnly}
@@ -127,9 +128,16 @@ export function TicketForm({
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-end mt-5">
-                    <Button type="button" variant={isReadOnly ? "default" : "outline"} className={isReadOnly ? "" : "mr-4"} onClick={handleCancel}>
-                        {isReadOnly ? "Back" : "Cancel"}
-                    </Button>
+                    {isReadOnly && (
+                        <Button type="button" variant="outline" className="mr-4" onClick={() => { router.push("/projects") }}>
+                            Back
+                        </Button>
+                    )}
+                    {!isReadOnly && (
+                        <Button type="button" variant="outline" className="mr-4" onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                    )}
                     {!isReadOnly && (
                         <Button type="submit">
                             {submitText}

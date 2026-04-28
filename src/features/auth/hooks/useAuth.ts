@@ -22,7 +22,7 @@ export const useAuth = () => {
       if (error) throw error;
 
       if (session) {
-        dispatch(setAuthSession({ session, user: session.user }));
+        dispatch(setAuthSession({ session, user: session.user as any }));
       } else {
         queryClient.clear();
         dispatch(clearAuthSession());
@@ -70,7 +70,7 @@ export const useAuth = () => {
       dispatch(setAuthError(error.message));
       return { error };
     }
-    dispatch(setAuthSession({ session: data.session, user: data.user }));
+    dispatch(setAuthSession({ session: data.session, user: data.user as any }));
     return { data };
   };
 

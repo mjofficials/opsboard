@@ -4,6 +4,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { ColumnDef } from "@tanstack/react-table"
 
+import { useRouter } from "next/navigation"
+
 import { AppTable } from "@/components/common/AppTable"
 import { Button } from "@/components/ui/button"
 import { useProjects } from "@/features/projects/hooks/useProjects"
@@ -19,6 +21,7 @@ interface SheetState {
 const CLOSED: SheetState = { open: false, mode: "create" }
 
 export default function ProjectsPage() {
+  const router = useRouter()
   const { projects, isLoading, isError, error, removeProject } = useProjects()
 
   const [sheet, setSheet] = useState<SheetState>(CLOSED)
@@ -27,6 +30,11 @@ export default function ProjectsPage() {
     {
       accessorKey: "name",
       header: "Name",
+      cell: ({ row }) => (
+        <Button variant="link" className="cursor-pointer" onClick={() => router.push(`/projects/${row.original.id}`)}>
+          {row.getValue("name")}
+        </Button>
+      ),
     },
     {
       accessorKey: "status",
@@ -84,7 +92,7 @@ export default function ProjectsPage() {
         <AppTable
           columns={columns}
           data={projects || []}
-          handleView={(row) => openSheet("view", row.id)}
+          handleView={(row) => router.push(`/projects/${row.id}`)}
           handleEdit={(row) => openSheet("edit", row.id)}
           handleDelete={(row) => handleDelete(row.id)}
         />
