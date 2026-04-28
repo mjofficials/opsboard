@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ticketCommentsService } from '../services/ticketsCommentsService';
 import { TicketComment } from '../types';
+import { useAppSelector } from '@/store/store';
 
 export const useTicketsComments = () => {
     const queryClient = useQueryClient();
+    const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
 
     const {
         data: ticketsComments,
@@ -12,7 +14,7 @@ export const useTicketsComments = () => {
         error,
         refetch,
     } = useQuery({
-        queryKey: ['tickets-comments'],
+        queryKey: ['tickets-comments', activeOrgId],
         queryFn: ticketCommentsService.getTicketsComments,
     });
 

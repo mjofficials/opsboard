@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Project } from '../types';
 import { projectService } from '../services/projectService';
+import { useAppSelector } from '@/store/store';
 
 export const useProjects = () => {
     const queryClient = useQueryClient();
+    const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
 
     const {
         data: projects,
@@ -12,7 +14,7 @@ export const useProjects = () => {
         error,
         refetch,
     } = useQuery({
-        queryKey: ['projects'],
+        queryKey: ['projects', activeOrgId],
         queryFn: projectService.getProjects,
     });
 
@@ -85,6 +87,7 @@ export const useProjects = () => {
 
 export const useProject = (id: string) => {
     const queryClient = useQueryClient();
+    const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
 
     return useQuery({
         queryKey: ['projects', id],
@@ -93,7 +96,7 @@ export const useProject = (id: string) => {
         initialData: () => {
             if (!id) return undefined;
             // Find the project in the existing 'projects' list cache
-            const projects = queryClient.getQueryData<Project[]>(['projects']);
+            const projects = queryClient.getQueryData<Project[]>(['projects', activeOrgId]);
             return projects?.find((project) => project.id === id);
         },
     });

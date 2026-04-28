@@ -1,12 +1,19 @@
 import { createClient } from '@/lib/supabase/client';
 import { Project } from '../types';
+import { store } from '@/store/store';
 
 export const projectService = {
   async getProjects() {
     const supabase = createClient();
+    const state = store.getState();
+    const orgId = state.auth.user?.organization_id;
+
+    if (!orgId) return [] as Project[];
+
     const { data, error } = await supabase
       .from('projects')
       .select('*')
+      .eq('organization_id', orgId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

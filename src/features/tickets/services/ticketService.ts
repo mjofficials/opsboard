@@ -1,12 +1,22 @@
 import { createClient } from '@/lib/supabase/client';
 import { Ticket } from '../types';
+import { store } from '@/store/store';
 
 export const ticketService = {
   async getTickets() {
     const supabase = createClient();
+    const state = store.getState();
+    const orgId = state.auth.user?.organization_id;
+
+    if (!orgId) return [] as Ticket[];
+
     const { data, error } = await supabase
       .from('tickets')
-      .select('*')
+      .select(`
+        *,
+        project:projects!inner(organization_id)
+      `)
+      .eq('projects.organization_id', orgId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

@@ -19,6 +19,8 @@ const allNavItems = [...baseNavItems, ...adminNavItems];
 
 interface SettingsSidebarProps {
   isAdmin: boolean;
+  isOwner: boolean;
+  isMember: boolean;
 }
 
 function SidebarLink({ item }: { item: typeof baseNavItems[0] }) {
@@ -34,8 +36,8 @@ function SidebarLink({ item }: { item: typeof baseNavItems[0] }) {
         isActive
           ? 'bg-accent text-accent-foreground'
           : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-        item.href === '/settings/danger-zone' &&
-          'text-destructive hover:text-destructive'
+        (item.href === '/settings/danger-zone' || item.href === '/settings/billing') &&
+        'text-destructive hover:text-destructive'
       )}
     >
       <Icon className="h-4 w-4 shrink-0" />
@@ -44,8 +46,8 @@ function SidebarLink({ item }: { item: typeof baseNavItems[0] }) {
   );
 }
 
-export const SettingsSidebar = memo(function SettingsSidebar({ isAdmin }: SettingsSidebarProps) {
-  const navItems = isAdmin ? allNavItems : baseNavItems;
+export const SettingsSidebar = memo(function SettingsSidebar({ isAdmin, isOwner }: SettingsSidebarProps) {
+  const navItems = isAdmin || isOwner ? allNavItems : baseNavItems;
 
   return (
     <nav className="w-48 shrink-0 space-y-1 pt-1">
