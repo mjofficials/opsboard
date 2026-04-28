@@ -65,29 +65,43 @@ const sidebarData = {
       icon: Settings2,
     }
   ],
-  teams: [
-    {
-      name: "OpsBoard",
-      logo: GalleryVerticalEnd,
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-    },
-  ],
+  teams: [],
 }
+
+import { useAppSelector, useAppDispatch } from "@/store/store"
+import { setActiveOrganization } from "@/features/auth/authSlice"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const dispatch = useAppDispatch()
+  const { user } = useAppSelector((state) => state.auth)
+
+  const userTeams = React.useMemo(() => {
+    if (!user?.organizations?.length) return sidebarData.teams;
+    return user.organizations.map((org) => ({
+      name: org.organizations?.name || "Unknown Organization",
+      logo: GalleryVerticalEnd, // Default logo
+      id: org.organization_id,
+      role: org.role,
+    }));
+  }, [user?.organizations]);
+
+  const activeTeam = React.useMemo(() => {
+    return userTeams.find((t) => t.id === user?.organization_id) || userTeams[0];
+  }, [user?.organization_id, userTeams]);
+
+  const handleTeamChange = (teamId: string) => {
+    dispatch(setActiveOrganization(teamId))
+  }
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={sidebarData.teams} />
+        <TeamSwitcher
+          teams={userTeams}
+          activeTeam={activeTeam}
+          onTeamChange={handleTeamChange}
+        />
       </SidebarHeader>
       <SidebarContent>
         <NavMain

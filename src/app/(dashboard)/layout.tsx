@@ -87,7 +87,8 @@ export default function Page({ children }: { children: React.ReactNode }) {
             <NavUser user={{
               name: user?.user_metadata?.name || "User",
               email: user?.email || "No Email",
-              avatar: "/avatars/shadcn.jpg"
+              role: user?.role || "No Role",
+              avatar: user?.user_metadata?.avatar_url || "/avatars/shadcn.jpg"
             }} />
           </div>
         </header>

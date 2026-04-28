@@ -14,19 +14,19 @@ export const authService = {
 
     const { data: orgData } = await supabase
       .from('organization_members')
-      .select('organization_id, role')
+      .select('organization_id, role, organizations(name)')
       .eq('user_id', authData.user.id)
-      .single();
 
-    if (orgData) {
+    if (orgData && orgData.length > 0) {
       return {
         data: {
           ...authData,
           session: authData.session,
           user: {
             ...authData.user,
-            organization_id: orgData.organization_id,
-            role: orgData.role,
+            organization_id: orgData[0].organization_id,
+            role: orgData[0].role,
+            organizations: orgData,
           }
         },
         error: null
@@ -61,11 +61,10 @@ export const authService = {
     if (sessionData.session?.user) {
       const { data: orgData } = await supabase
         .from('organization_members')
-        .select('organization_id, role')
+        .select('organization_id, role, organizations(name)')
         .eq('user_id', sessionData.session.user.id)
-        .single();
 
-      if (orgData) {
+      if (orgData && orgData.length > 0) {
         return {
           data: {
             ...sessionData,
@@ -73,8 +72,9 @@ export const authService = {
               ...sessionData.session,
               user: {
                 ...sessionData.session.user,
-                organization_id: orgData.organization_id,
-                role: orgData.role,
+                organization_id: orgData[0].organization_id,
+                role: orgData[0].role,
+                organizations: orgData,
               }
             }
           },

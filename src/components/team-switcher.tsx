@@ -21,14 +21,22 @@ import {
 
 export function TeamSwitcher({
     teams,
+    activeTeam,
+    onTeamChange,
 }: {
     teams: {
+        id?: string
         name: string
         logo: React.ElementType
-    }[]
+    }[],
+    activeTeam?: {
+        id?: string
+        name: string
+        logo: React.ElementType
+    },
+    onTeamChange?: (teamId: string) => void
 }) {
     const { isMobile } = useSidebar()
-    const [activeTeam, setActiveTeam] = React.useState(teams[0])
 
     if (!activeTeam) {
         return null
@@ -64,23 +72,26 @@ export function TeamSwitcher({
                         {teams.map((team, index) => (
                             <DropdownMenuItem
                                 key={team.name}
-                                onClick={() => setActiveTeam(team)}
-                                className="gap-2 p-2"
+                                onClick={() => {
+                                    if (onTeamChange && team.id) {
+                                        onTeamChange(team.id)
+                                    }
+                                }}
+                                className="cursor-pointer gap-2 p-2"
                             >
                                 <div className="flex size-6 items-center justify-center rounded-md border">
                                     <team.logo className="size-3.5 shrink-0" />
                                 </div>
                                 {team.name}
-                                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                             </DropdownMenuItem>
                         ))}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="gap-2 p-2">
+                        {/* <DropdownMenuSeparator /> */}
+                        {/* <DropdownMenuItem className="gap-2 p-2">
                             <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                                 <Plus className="size-4" />
                             </div>
                             <div className="font-medium text-muted-foreground">Add team</div>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>

@@ -32,8 +32,26 @@ const authSlice = createSlice({
       state.status = 'idle';
       state.error = null;
     },
+    setActiveOrganization(state, action: PayloadAction<string>) {
+      if (state.user) {
+        state.user.organization_id = action.payload;
+        // Also update role based on the selected organization if we have the organizations list
+        const selectedOrg = state.user.organizations?.find(
+          (org) => org.organization_id === action.payload
+        );
+        if (selectedOrg) {
+          state.user.role = selectedOrg.role;
+        }
+      }
+    },
   },
 });
 
-export const { setAuthSession, setAuthLoading, setAuthError, clearAuthSession } = authSlice.actions;
+export const {
+  setAuthSession,
+  setAuthLoading,
+  setAuthError,
+  clearAuthSession,
+  setActiveOrganization
+} = authSlice.actions;
 export default authSlice.reducer;
