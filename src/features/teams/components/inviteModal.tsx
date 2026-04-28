@@ -10,7 +10,7 @@ import { z } from "zod"
 
 const inviteSchema = z.object({
     email: z.string().email("Invalid email address"),
-    role: z.enum(["MANAGER", "EMPLOYEE"])
+    role: z.enum(["MEMBER"])
 })
 
 export type InviteFormValues = z.infer<typeof inviteSchema>
@@ -44,7 +44,7 @@ export default function InviteModal({
                     onSubmit={onSubmit}
                     defaultValues={initialData || {
                         email: "",
-                        role: "MANAGER"
+                        role: "MEMBER"
                     }}
                 >
                     <CardContent className="space-y-4">
@@ -58,8 +58,7 @@ export default function InviteModal({
                             name="role"
                             label="Role"
                             options={[
-                                { value: "MANAGER", label: "Manager" },
-                                { value: "EMPLOYEE", label: "Employee" },
+                                { value: "MEMBER", label: "Member" },
                             ]}
                             placeholder="Select Role"
                         />

@@ -29,6 +29,32 @@ export const teamService = {
     return data as TeamMember;
   },
 
+  async acceptTeamMember(id: string) {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .rpc('accept_invitation', {
+        invitation_id: id
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as TeamMember;
+  },
+
+  async rejectTeamMember(id: string) {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .rpc('reject_invitation', {
+        invitation_id: id
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as TeamMember;
+  },
+
   async deleteTeamMember(id: string) {
     const supabase = createClient();
     const { error } = await supabase

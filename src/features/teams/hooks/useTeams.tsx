@@ -26,6 +26,16 @@ export const useTeams = () => {
         onSuccess: invalidateTeams,
     });
 
+    const acceptMutation = useMutation({
+        mutationFn: (id: string) => teamService.acceptTeamMember(id),
+        onSuccess: invalidateTeams,
+    });
+
+    const rejectMutation = useMutation({
+        mutationFn: (id: string) => teamService.rejectTeamMember(id),
+        onSuccess: invalidateTeams,
+    });
+
     const deleteMutation = useMutation({
         mutationFn: (id: string) => teamService.deleteTeamMember(id),
         onSuccess: invalidateTeams,
@@ -50,6 +60,24 @@ export const useTeams = () => {
         }
     };
 
+    const acceptTeamMember = async (id: string) => {
+        try {
+            await acceptMutation.mutateAsync(id);
+            return { error: null };
+        } catch (err: any) {
+            return { error: err.message };
+        }
+    };
+
+    const rejectTeamMember = async (id: string) => {
+        try {
+            await rejectMutation.mutateAsync(id);
+            return { error: null };
+        } catch (err: any) {
+            return { error: err.message };
+        }
+    };
+
     return {
         teams,
         isLoading,
@@ -57,6 +85,8 @@ export const useTeams = () => {
         error: error ? (error as Error).message : null,
         addTeamMember,
         deleteTeamMember,
+        acceptTeamMember,
+        rejectTeamMember,
         refreshTeams: refetch,
     };
 };

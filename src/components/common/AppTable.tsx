@@ -52,6 +52,8 @@ interface AppTableProps<TData, TValue> {
   handleView?: (args: TData) => void
   handleEdit?: (args: TData) => void
   handleDelete?: (args: TData) => void
+  handleAccept?: (args: TData) => void
+  handleReject?: (args: TData) => void
 }
 
 export function AppTable<TData, TValue>({
@@ -60,7 +62,9 @@ export function AppTable<TData, TValue>({
   actions,
   handleView,
   handleEdit,
-  handleDelete
+  handleDelete,
+  handleAccept,
+  handleReject,
 }: AppTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
@@ -83,6 +87,8 @@ export function AppTable<TData, TValue>({
               <DropdownMenuGroup>
                 {handleView && <DropdownMenuItem onClick={() => handleView?.(row.original)}>View</DropdownMenuItem>}
                 {handleEdit && <DropdownMenuItem onClick={() => handleEdit?.(row.original)}>Edit</DropdownMenuItem>}
+                {handleAccept && <DropdownMenuItem onClick={() => handleAccept?.(row.original)}>Accept</DropdownMenuItem>}
+                {handleReject && <DropdownMenuItem onClick={() => handleReject?.(row.original)}>Reject</DropdownMenuItem>}
                 {handleDelete && <DropdownMenuItem
                   onClick={() => {
                     setSelectedItemId(row.original)
