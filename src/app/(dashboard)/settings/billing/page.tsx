@@ -47,9 +47,8 @@ export default function BillingPage() {
             {(['free', 'pro', 'enterprise'] as const).map((p) => (
               <div
                 key={p}
-                className={`rounded-lg border p-4 ${
-                  plan === p ? 'border-primary bg-accent' : 'border-border'
-                }`}
+                className={`rounded-lg border p-4 ${plan === p ? 'border-primary bg-accent' : 'border-border'
+                  }`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold capitalize">{p}</span>
@@ -84,7 +83,7 @@ export default function BillingPage() {
           <CardDescription>
             Billing email:{' '}
             <span className="text-foreground font-medium">
-              {organization?.billing_email ?? organization?.contact_email ?? 'Not set'}
+              {organization?.billing_email ?? 'Not set'}
             </span>
           </CardDescription>
         </CardHeader>

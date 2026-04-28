@@ -18,7 +18,9 @@ import { Organization } from '@/features/settings/types';
 
 export default function GeneralSettingsPage() {
   const { user } = useAuth();
+  const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
+  const isMember = user?.role === 'MEMBER';
   const { organization, isLoading, updateOrganization, isUpdating } =
     useOrganization(user?.organization_id);
 
@@ -31,9 +33,6 @@ export default function GeneralSettingsPage() {
     if (organization) {
       setForm({
         name: organization.name,
-        contact_email: organization.contact_email ?? '',
-        website: organization.website ?? '',
-        description: organization.description ?? '',
       });
       setIsDirty(false);
     }
@@ -89,7 +88,7 @@ export default function GeneralSettingsPage() {
         </p>
       </div>
 
-      {!isAdmin && <ReadOnlyBanner />}
+      {isMember && <ReadOnlyBanner />}
 
       {/* Avatar */}
       <Card>
@@ -104,7 +103,7 @@ export default function GeneralSettingsPage() {
               {organization?.name?.[0]?.toUpperCase() ?? 'O'}
             </AvatarFallback>
           </Avatar>
-          {isAdmin && (
+          {(isAdmin || isOwner) && (
             <>
               <Button
                 variant="outline"
@@ -139,43 +138,11 @@ export default function GeneralSettingsPage() {
               id="org-name"
               value={form.name ?? ''}
               onChange={(e) => handleChange('name', e.target.value)}
-              disabled={!isAdmin}
+              disabled={!isAdmin && !isOwner}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="org-email">Contact Email</Label>
-            <Input
-              id="org-email"
-              type="email"
-              value={form.contact_email ?? ''}
-              onChange={(e) => handleChange('contact_email', e.target.value)}
-              disabled={!isAdmin}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="org-website">Website</Label>
-            <Input
-              id="org-website"
-              type="url"
-              placeholder="https://"
-              value={form.website ?? ''}
-              onChange={(e) => handleChange('website', e.target.value)}
-              disabled={!isAdmin}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="org-desc">Description</Label>
-            <Input
-              id="org-desc"
-              value={form.description ?? ''}
-              onChange={(e) => handleChange('description', e.target.value)}
-              disabled={!isAdmin}
-            />
-          </div>
-
-          {isAdmin && (
+          {(isAdmin || isOwner) && (
             <>
-              <Separator />
               <div className="flex justify-end">
                 <Button
                   onClick={handleSave}
