@@ -5,6 +5,8 @@ import { ThemeProvider } from "next-themes";
 import { ReduxProvider } from "@/store/ReduxProvider";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
+import AppGlobalLoader from "@/components/common/AppGlobalLoader";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +41,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <AppGlobalLoader />
               {children}
               <Toaster position="top-center" />
             </ThemeProvider>

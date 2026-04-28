@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
-  const { user, session, status, error } = useAppSelector((state) => state.auth);
+  const { user, session, status, error, isInitialized } = useAppSelector((state) => state.auth);
   const queryClient = useQueryClient();
 
   const initAuth = useCallback(async () => {
@@ -112,6 +112,7 @@ export const useAuth = () => {
     user,
     session,
     isLoading: status === 'loading',
+    isInitialized,
     error,
     login,
     register,

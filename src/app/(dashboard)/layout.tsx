@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { NavUser } from "@/components/nav-user"
@@ -19,17 +19,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useAuth } from "@/features/auth/hooks/useAuth"
 
 export default function Page({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { setTheme } = useTheme()
-  const { user, session, isLoading, logout } = useAuth()
+  const { user, session, isLoading, isInitialized, logout } = useAuth()
+  const initialRedirectDone = useRef(false);
 
   useEffect(() => {
     // Wait until auth has fully resolved before making guard decisions
-    if (isLoading) return;
+    if (isLoading || !isInitialized) return;
 
     if (!session) {
       router.replace('/login');
@@ -38,16 +40,37 @@ export default function Page({ children }: { children: React.ReactNode }) {
 
     if (!user?.organization_id) {
       router.replace('/onboarding');
+      return;
     }
-  }, [session, user, isLoading, router]);
+
+    // Persist current page: Check for a last visited page on initial load
+    if (typeof window !== 'undefined' && !initialRedirectDone.current) {
+      initialRedirectDone.current = true;
+      const storedPage = localStorage.getItem('lastVisitedPage');
+      console.log({ storedPage, pathname });
+      if (storedPage && storedPage !== pathname) {
+        router.replace(storedPage);
+        return;
+      }
+    }
+  }, [session, user, isLoading, isInitialized, router, pathname]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && pathname && pathname !== '/login' && pathname !== '/register' && pathname !== '/onboarding') {
+      localStorage.setItem('lastVisitedPage', pathname);
+    }
+  }, [pathname]);
 
   const handleLogout = async () => {
     await logout();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('lastVisitedPage');
+    }
     router.push("/login");
   }
 
   // Render nothing while auth is resolving or a redirect is pending
-  if (isLoading || !session || !user?.organization_id) {
+  if (isLoading || !isInitialized || !session || !user?.organization_id) {
     return null;
   }
 

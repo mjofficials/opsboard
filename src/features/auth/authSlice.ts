@@ -6,6 +6,7 @@ const initialState: AuthState = {
   session: null,
   status: 'idle',
   error: null,
+  isInitialized: false,
 };
 
 const authSlice = createSlice({
@@ -16,7 +17,30 @@ const authSlice = createSlice({
       state.session = action.payload.session;
       state.user = action.payload.user;
       state.status = 'succeeded';
+      state.isInitialized = true;
       state.error = null;
+
+      if (state.user && typeof window !== 'undefined') {
+        const storedOrgId = localStorage.getItem('activeOrgId');
+        if (storedOrgId) {
+          const isMember = state.user.organizations?.some(
+            (org) => org.organization_id === storedOrgId
+          );
+          if (isMember) {
+            state.user.organization_id = storedOrgId;
+            const selectedOrg = state.user.organizations?.find(
+              (org) => org.organization_id === storedOrgId
+            );
+            if (selectedOrg) {
+              state.user.role = selectedOrg.role;
+            }
+          } else {
+            localStorage.removeItem('activeOrgId');
+          }
+        } else if (state.user.organization_id) {
+          localStorage.setItem('activeOrgId', state.user.organization_id);
+        }
+      }
     },
     setAuthLoading(state) {
       state.status = 'loading';
@@ -24,13 +48,18 @@ const authSlice = createSlice({
     },
     setAuthError(state, action: PayloadAction<string>) {
       state.status = 'failed';
+      state.isInitialized = true;
       state.error = action.payload;
     },
     clearAuthSession(state) {
       state.session = null;
       state.user = null;
       state.status = 'idle';
+      state.isInitialized = true;
       state.error = null;
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('activeOrgId');
+      }
     },
     setActiveOrganization(state, action: PayloadAction<string>) {
       if (state.user) {
@@ -41,6 +70,10 @@ const authSlice = createSlice({
         );
         if (selectedOrg) {
           state.user.role = selectedOrg.role;
+        }
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('activeOrgId', action.payload);
         }
       }
     },

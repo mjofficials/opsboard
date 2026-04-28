@@ -23,6 +23,7 @@ export interface AuthState {
   session: Session | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  isInitialized: boolean;
 }
 
 export type { Session };
