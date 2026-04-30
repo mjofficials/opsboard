@@ -32,8 +32,8 @@ export const useTickets = () => {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Ticket> }) =>
       ticketService.updateTicket(id, updates),
     onSuccess: (data, variables) => {
+      queryClient.setQueryData(['tickets', variables.id], data);
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['tickets', variables.id] });
     },
   });
 

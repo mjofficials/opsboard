@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { AppForm } from "@/components/form/AppForm"
 import { AppInput } from "@/components/form/inputs/AppInput"
 import { AppSelect } from "@/components/form/inputs/AppSelect"
-import { useProjects } from "@/features/projects/hooks/useProjects"
 import { TicketPriority, TicketStatus } from "../enums"
 import { toTitleCase } from "@/lib/utils"
 
@@ -17,7 +16,6 @@ export const ticketSchema = z.object({
     description: z.string(),
     status: z.enum(["OPEN", "IN_PROGRESS", "DONE"] as const),
     priority: z.enum(["LOW", "MEDIUM", "HIGH"] as const),
-    project_id: z.string().min(1, "Project is required"),
 })
 
 export type TicketFormValues = z.infer<typeof ticketSchema>
@@ -43,8 +41,6 @@ export function TicketForm({
 }: TicketFormProps) {
     const router = useRouter();
 
-    const { projects, isLoading } = useProjects();
-
     const handleCancel = () => {
         if (onCancel) {
             onCancel()
@@ -67,8 +63,7 @@ export function TicketForm({
                     title: "",
                     description: "",
                     status: "OPEN",
-                    priority: "MEDIUM",
-                    project_id: ""
+                    priority: "MEDIUM"
                 }}
             >
                 <CardContent className="space-y-4">
@@ -81,17 +76,6 @@ export function TicketForm({
                             required
                         />
 
-                        <AppSelect
-                            name="project_id"
-                            label="Project"
-                            options={projects?.map((project) => ({
-                                value: project.id,
-                                label: project.name,
-                            })) || []}
-                            placeholder="Select Project"
-                            disabled={isReadOnly || isLoading}
-                            required
-                        />
 
                         <AppSelect
                             name="status"

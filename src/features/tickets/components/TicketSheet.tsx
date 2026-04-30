@@ -16,6 +16,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth"
 import { useTicket, useTickets } from "../hooks/useTickets"
 import { TicketForm, TicketFormValues } from "./TicketForm"
 import { Badge } from "@/components/ui/badge"
+import { useParams } from "next/navigation"
 
 export type TicketSheetMode = "create" | "view" | "edit"
 
@@ -75,6 +76,7 @@ export function TicketSheet({
     ticketId,
     mode = "create",
 }: TicketSheetProps) {
+    const params = useParams();
     const { user } = useAuth()
     const { addTicket, editTicket } = useTickets()
     const [isPending, setIsPending] = useState(false)
@@ -96,7 +98,6 @@ export function TicketSheet({
                 title: ticket.title,
                 status: ticket.status,
                 priority: ticket.priority,
-                project_id: ticket.project_id,
                 description: ticket.description,
             }
             : undefined
@@ -110,6 +111,7 @@ export function TicketSheet({
             : "Save Changes"
 
     const handleCreate = async (data: TicketFormValues) => {
+        console.log("data", data);
         if (!user?.id || !user?.organization_id) {
             toast.error("User does not have an active organization")
             return
@@ -120,7 +122,7 @@ export function TicketSheet({
             title: data.title,
             status: data.status,
             priority: data.priority,
-            project_id: data.project_id,
+            project_id: params.projectId as string,
             description: data.description,
         })
         setIsPending(false)
@@ -141,7 +143,7 @@ export function TicketSheet({
             title: data.title,
             status: data.status,
             priority: data.priority,
-            project_id: data.project_id,
+            project_id: params.projectId as string,
             description: data.description,
         })
         setIsPending(false)

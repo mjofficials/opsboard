@@ -14,7 +14,7 @@ interface TicketCommentsSectionProps {
 }
 
 export function TicketCommentsSection({ ticketId }: TicketCommentsSectionProps) {
-  const { ticketsComments, addTicketComment, isLoading } = useTicketsComments()
+  const { ticketsComments, addTicketComment, isLoading } = useTicketsComments(ticketId)
   const { user } = useAuth()
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -56,7 +56,7 @@ export function TicketCommentsSection({ ticketId }: TicketCommentsSectionProps) 
         <MessageSquare className="h-4 w-4" />
         Activity & Comments
       </div>
-      
+
       {/* Comments List */}
       <div className="p-4 flex-1 space-y-4 max-h-[400px] overflow-y-auto">
         {isLoading ? (
@@ -98,8 +98,8 @@ export function TicketCommentsSection({ ticketId }: TicketCommentsSectionProps) 
             className="min-h-[80px] resize-none pr-12 bg-background"
             disabled={isSubmitting}
           />
-          <Button 
-            size="icon" 
+          <Button
+            size="icon"
             className="absolute bottom-2 right-2 h-8 w-8"
             onClick={handleSubmit}
             disabled={!newComment.trim() || isSubmitting}

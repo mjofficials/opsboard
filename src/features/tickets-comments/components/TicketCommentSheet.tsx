@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/features/auth/hooks/useAuth"
 import { useTicketComment, useTicketsComments } from "../hooks/useTicketsComments"
 import { TicketCommentForm, TicketCommentFormValues } from "./TicketCommentForm"
+import { useParams } from "next/navigation"
 
 export type TicketCommentSheetMode = "create" | "view" | "edit"
 
@@ -74,8 +75,10 @@ export function TicketCommentSheet({
     ticketCommentId,
     mode = "create",
 }: TicketCommentSheetProps) {
+    const params = useParams();
+    const ticketId = params.ticketId as string;
     const { user } = useAuth()
-    const { addTicketComment, editTicketComment } = useTicketsComments()
+    const { addTicketComment, editTicketComment } = useTicketsComments(ticketId)
     const [isPending, setIsPending] = useState(false)
 
     const {

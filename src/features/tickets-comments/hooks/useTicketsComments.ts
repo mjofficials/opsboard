@@ -3,9 +3,8 @@ import { ticketCommentsService } from '../services/ticketsCommentsService';
 import { TicketComment } from '../types';
 import { useAppSelector } from '@/store/store';
 
-export const useTicketsComments = () => {
+export const useTicketsComments = (ticketId?: string) => {
     const queryClient = useQueryClient();
-    const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
 
     const {
         data: ticketsComments,
@@ -14,8 +13,9 @@ export const useTicketsComments = () => {
         error,
         refetch,
     } = useQuery({
-        queryKey: ['tickets-comments', activeOrgId],
-        queryFn: ticketCommentsService.getTicketsComments,
+        queryKey: ['tickets-comments', ticketId],
+        queryFn: () => ticketCommentsService.getTicketsComments(ticketId ?? ""),
+        enabled: !!ticketId,
     });
 
     const invalidateTicketsComments = () => {
