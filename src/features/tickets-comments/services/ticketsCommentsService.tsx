@@ -7,7 +7,7 @@ export const ticketCommentsService = {
         const supabase = createClient();
         const { data, error } = await supabase
             .from('ticket_comments')
-            .select('*')
+            .select(`*, user:profiles!ticket_comments_user_id_fkey(name)`)
             .eq('ticket_id', ticketId)
             .order('created_at', { ascending: false });
 

@@ -69,11 +69,11 @@ export function TicketCommentsSection({ ticketId }: TicketCommentsSectionProps) 
           ticketComments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-xs">U</AvatarFallback>
+                <AvatarFallback className="text-xs">{comment.user?.name}</AvatarFallback>
               </Avatar>
               <div className="flex-1 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">User</span>
+                  <span className="text-sm font-medium">{comment.user?.name}</span>
                   <span className="text-xs text-muted-foreground">
                     {new Date(comment.created_at || "").toLocaleString()}
                   </span>

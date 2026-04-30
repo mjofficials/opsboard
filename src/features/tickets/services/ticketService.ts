@@ -14,7 +14,8 @@ export const ticketService = {
       .from('tickets')
       .select(`
         *,
-        project:projects!inner(organization_id)
+        project:projects!inner(organization_id),
+        creator:profiles!tickets_created_by_fkey(name)
       `)
       .eq('projects.organization_id', orgId)
       .order('created_at', { ascending: false });

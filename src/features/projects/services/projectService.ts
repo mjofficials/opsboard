@@ -12,7 +12,7 @@ export const projectService = {
 
     const { data, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(`*, creator:profiles!projects_created_by_fkey(name)`)
       .eq('organization_id', orgId)
       .order('created_at', { ascending: false });
 

@@ -5,4 +5,9 @@ export interface TicketComment {
     comment: string;
     created_at?: string;
     updated_at?: string;
+    user?: TicketCommentUser;
+}
+
+interface TicketCommentUser {
+    name: string;
 }
