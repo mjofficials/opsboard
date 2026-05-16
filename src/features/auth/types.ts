@@ -5,7 +5,7 @@ export interface OrganizationMembership {
   role: string;
   organizations?: {
     name: string;
-    logo_url?: string | null;
+    logo_path?: string | null;
   } | null;
 }
 

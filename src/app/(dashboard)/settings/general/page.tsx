@@ -59,7 +59,7 @@ export default function GeneralSettingsPage() {
     setIsUploadingAvatar(true);
     try {
       const url = await settingsService.uploadOrgAvatar(user.organization_id, file);
-      const { error } = await updateOrganization({ logo_url: url });
+      const { error } = await updateOrganization({ logo_path: url });
       if (error) throw new Error(error);
       toast.success('Logo updated');
     } catch (err: any) {
@@ -98,7 +98,7 @@ export default function GeneralSettingsPage() {
         </CardHeader>
         <CardContent className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={organization?.logo_url ?? ''} />
+            <AvatarImage src={organization?.logo_path ?? ''} />
             <AvatarFallback className="text-lg font-semibold">
               {organization?.name?.[0]?.toUpperCase() ?? 'O'}
             </AvatarFallback>

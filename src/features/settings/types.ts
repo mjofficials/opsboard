@@ -1,7 +1,7 @@
 export interface Organization {
   id: string;
   name: string;
-  logo_url?: string | null;
+  logo_path?: string | null;
   plan?: 'free' | 'pro' | 'enterprise';
   billing_email?: string | null;
   created_at: string;

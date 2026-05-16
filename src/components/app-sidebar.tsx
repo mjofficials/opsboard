@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     if (!user?.organizations?.length) return sidebarData.teams;
     return user.organizations.map((org) => ({
       name: org.organizations?.name || "Unknown Organization",
-      logo: GalleryVerticalEnd, // Default logo
+      logo: org.organizations?.logo_path || "/logos/default.svg",
       id: org.organization_id,
       role: org.role,
     }));

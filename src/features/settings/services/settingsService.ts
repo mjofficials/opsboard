@@ -33,10 +33,10 @@ export const settingsService = {
     const ext = file.name.split('.').pop();
     const path = `${orgId}/logo.${ext}`;
     const { error } = await supabase.storage
-      .from('org-avatars')
+      .from('organization-logos')
       .upload(path, file, { upsert: true });
     if (error) throw error;
-    const { data } = supabase.storage.from('org-avatars').getPublicUrl(path);
+    const { data } = supabase.storage.from('organization-logos').getPublicUrl(path);
     return data.publicUrl;
   },
 
