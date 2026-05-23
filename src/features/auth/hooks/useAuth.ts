@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { authService } from '../services/authService';
-import {
-  setAuthSession,
-  setAuthLoading,
-  setAuthError,
-  clearAuthSession,
-} from '../authSlice';
+import { setAuthSession, setAuthLoading, setAuthError, clearAuthSession } from '../authSlice';
 import { createClient } from '@/lib/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -18,7 +13,10 @@ export const useAuth = () => {
   const initAuth = useCallback(async () => {
     dispatch(setAuthLoading());
     try {
-      const { data: { session }, error } = await authService.getCurrentSession();
+      const {
+        data: { session },
+        error,
+      } = await authService.getCurrentSession();
       if (error) throw error;
 
       if (session) {
@@ -43,25 +41,25 @@ export const useAuth = () => {
     }
 
     const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'INITIAL_SESSION') return;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') return;
 
-        if (session) {
-          // Do not dispatch raw session, as it lacks role/org data.
-          // initAuth will fetch the decorated session and update Redux without clearing the current user.
-          initAuth();
-        } else {
-          queryClient.clear();
-          dispatch(clearAuthSession());
-        }
+      if (session) {
+        // Do not dispatch raw session, as it lacks role/org data.
+        // initAuth will fetch the decorated session and update Redux without clearing the current user.
+        initAuth();
+      } else {
+        queryClient.clear();
+        dispatch(clearAuthSession());
       }
-    );
+    });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, initAuth, queryClient]);
+  }, [status, dispatch, initAuth, queryClient]);
 
   const login = async (email: string, password: string) => {
     dispatch(setAuthLoading());

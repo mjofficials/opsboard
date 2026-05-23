@@ -1,76 +1,58 @@
-"use client"
+'use client';
 
-import {
-  AudioWaveform,
-  Command,
-  Folder,
-  GalleryVerticalEnd,
-  LayoutDashboard,
-  MessageSquare,
-  Settings2,
-  Ticket,
-  User,
-  Users
-} from "lucide-react"
-import * as React from "react"
-import { usePathname } from "next/navigation"
+import { Folder, LayoutDashboard, Settings2, User, Users } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import * as React from 'react';
 
-import { NavMain } from "@/components/nav-main"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail
-} from "@/components/ui/sidebar"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavMain } from '@/components/nav-main';
+import { TeamSwitcher } from '@/components/team-switcher';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 
 const sidebarData = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "/dashboard",
+      title: 'Dashboard',
+      url: '/dashboard',
       icon: LayoutDashboard,
     },
     {
-      title: "Users",
-      url: "/users",
+      title: 'Users',
+      url: '/users',
       icon: User,
     },
     {
-      title: "Projects",
-      url: "/projects",
+      title: 'Projects',
+      url: '/projects',
       icon: Folder,
     },
     {
-      title: "Teams",
-      url: "/teams",
+      title: 'Teams',
+      url: '/teams',
       icon: Users,
     },
     {
-      title: "Settings",
-      url: "/settings",
+      title: 'Settings',
+      url: '/settings',
       icon: Settings2,
-    }
+    },
   ],
   teams: [],
-}
+};
 
-import { useAppSelector, useAppDispatch } from "@/store/store"
-import { setActiveOrganization } from "@/features/auth/authSlice"
+import { setActiveOrganization } from '@/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/store';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-  const dispatch = useAppDispatch()
-  const { user } = useAppSelector((state) => state.auth)
+  const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
 
   const userTeams = React.useMemo(() => {
-    if (!user?.organizations?.length) return sidebarData.teams;
-    return user.organizations.map((org) => ({
-      name: org.organizations?.name || "Unknown Organization",
-      logo: org.organizations?.logo_path || "/logos/default.svg",
+    const organizations = user?.organizations;
+    if (!organizations?.length) return sidebarData.teams;
+    return organizations.map((org) => ({
+      name: org.organizations?.name || 'Unknown Organization',
+      logo: org.organizations?.logo_path || '/logos/default.svg',
       id: org.organization_id,
       role: org.role,
     }));
@@ -81,24 +63,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [user?.organization_id, userTeams]);
 
   const handleTeamChange = (teamId: string) => {
-    dispatch(setActiveOrganization(teamId))
-  }
+    dispatch(setActiveOrganization(teamId));
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher
-          teams={userTeams}
-          activeTeam={activeTeam}
-          onTeamChange={handleTeamChange}
-        />
+        <TeamSwitcher teams={userTeams} activeTeam={activeTeam} onTeamChange={handleTeamChange} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain
-          items={sidebarData.navMain.map(item => ({ ...item, isActive: pathname === item.url || pathname.startsWith(item.url + '/') }))}
+          items={sidebarData.navMain.map((item) => ({
+            ...item,
+            isActive: pathname === item.url || pathname.startsWith(item.url + '/'),
+          }))}
         />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

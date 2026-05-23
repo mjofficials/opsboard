@@ -1,28 +1,28 @@
 'use client';
 
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useOrganization } from '@/features/settings/hooks/useOrganization';
-import { ReadOnlyBanner } from '@/features/settings/components/ReadOnlyBanner';
-import { settingsService } from '@/features/settings/services/settingsService';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { useState, useRef, useEffect } from 'react';
-import { UploadIcon } from 'lucide-react';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { ReadOnlyBanner } from '@/features/settings/components/ReadOnlyBanner';
+import { useOrganization } from '@/features/settings/hooks/useOrganization';
+import { settingsService } from '@/features/settings/services/settingsService';
 import { Organization } from '@/features/settings/types';
+import { UploadIcon } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 export default function GeneralSettingsPage() {
   const { user } = useAuth();
   const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
   const isMember = user?.role === 'MEMBER';
-  const { organization, isLoading, updateOrganization, isUpdating } =
-    useOrganization(user?.organization_id);
+  const { organization, isLoading, updateOrganization, isUpdating } = useOrganization(
+    user?.organization_id
+  );
 
   const [form, setForm] = useState<Partial<Organization>>({});
   const [isDirty, setIsDirty] = useState(false);
@@ -144,10 +144,7 @@ export default function GeneralSettingsPage() {
           {(isAdmin || isOwner) && (
             <>
               <div className="flex justify-end">
-                <Button
-                  onClick={handleSave}
-                  disabled={!isDirty || isUpdating}
-                >
+                <Button onClick={handleSave} disabled={!isDirty || isUpdating}>
                   {isUpdating ? 'Saving…' : 'Save Changes'}
                 </Button>
               </div>
