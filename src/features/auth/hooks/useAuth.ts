@@ -10,8 +10,10 @@ export const useAuth = () => {
   const { user, session, status, error, isInitialized } = useAppSelector((state) => state.auth);
   const queryClient = useQueryClient();
 
-  const initAuth = useCallback(async () => {
-    dispatch(setAuthLoading());
+  const initAuth = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) {
+      dispatch(setAuthLoading());
+    }
     try {
       const {
         data: { session },
@@ -26,30 +28,46 @@ export const useAuth = () => {
         dispatch(clearAuthSession());
       }
     } catch (err: any) {
-      dispatch(setAuthError(err.message));
+      if (!options?.silent) {
+        dispatch(setAuthError(err.message));
+      }
     }
   }, [dispatch, queryClient]);
 
   // Keep track of whether we've initialized auth to prevent duplicate calls
   const initRef = useRef(false);
+  const sessionRef = useRef(session);
 
-  // Set up auth state listener
+  // Keep session ref up-to-date to avoid stale closures in event listener
   useEffect(() => {
-    if (status === 'idle' && !initRef.current) {
+    sessionRef.current = session;
+  }, [session]);
+
+  // 1. Initial auth run on mount
+  useEffect(() => {
+    if (!isInitialized && !initRef.current) {
       initRef.current = true;
       initAuth();
     }
+  }, [initAuth, isInitialized]);
 
+  // 2. Separate auth state listener to avoid subscription churn
+  useEffect(() => {
     const supabase = createClient();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') return;
+      if (event === 'INITIAL_SESSION') {
+        return;
+      }
 
       if (session) {
-        // Do not dispatch raw session, as it lacks role/org data.
-        // initAuth will fetch the decorated session and update Redux without clearing the current user.
-        initAuth();
+        const currentSession = sessionRef.current;
+        const tokenChanged = !currentSession || currentSession.access_token !== session.access_token;
+        
+        if (tokenChanged) {
+          initAuth({ silent: !!currentSession });
+        }
       } else {
         queryClient.clear();
         dispatch(clearAuthSession());
@@ -59,7 +77,7 @@ export const useAuth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [status, dispatch, initAuth, queryClient]);
+  }, [dispatch, initAuth, queryClient]);
 
   const login = async (email: string, password: string) => {
     dispatch(setAuthLoading());
