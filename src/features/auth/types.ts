@@ -1,8 +1,10 @@
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
+export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER';
+
 export interface OrganizationMembership {
   organization_id: string;
-  role: string;
+  role: UserRole;
   organizations?: {
     name: string;
     logo_path?: string | null;
@@ -11,7 +13,7 @@ export interface OrganizationMembership {
 
 export interface User extends Omit<SupabaseUser, 'user_metadata'> {
   organization_id?: string;
-  role?: string;
+  role?: UserRole;
   organizations?: OrganizationMembership[];
   user_metadata?: {
     name?: string;
