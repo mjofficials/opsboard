@@ -1,5 +1,3 @@
-import { User as SupabaseUser, Session } from '@supabase/supabase-js';
-
 export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER';
 
 export interface OrganizationMembership {
@@ -11,13 +9,18 @@ export interface OrganizationMembership {
   } | null;
 }
 
-export interface User extends Omit<SupabaseUser, 'user_metadata'> {
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
   organization_id?: string;
   role?: UserRole;
   organizations?: OrganizationMembership[];
-  user_metadata?: {
-    name?: string;
-  } & SupabaseUser['user_metadata'];
+}
+
+export interface Session {
+  access_token: string;
+  user: User;
 }
 
 export interface AuthState {
@@ -27,5 +30,3 @@ export interface AuthState {
   error: string | null;
   isInitialized: boolean;
 }
-
-export type { Session };

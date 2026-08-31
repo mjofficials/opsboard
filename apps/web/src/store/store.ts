@@ -6,7 +6,7 @@ export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // We often store Supabase session objects which may have non-serializable properties
+      serializableCheck: false, // We often store session objects which may have non-serializable properties
     }),
 });
 

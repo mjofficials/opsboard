@@ -1,107 +1,52 @@
-import { createClient } from '@/lib/supabase/client';
+import { apiClient } from '@/lib/api/apiClient';
 
 export const authService = {
   async login(email: string, password: string) {
-    const supabase = createClient();
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError || !authData.user) {
-      return { data: authData, error: authError };
+    try {
+      const { data } = await apiClient.post('/auth/login', { email, password });
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.response?.data || error };
     }
-
-    const { data: orgData } = await supabase
-      .from('organization_members')
-      .select('organization_id, role, organizations(name)')
-      .eq('user_id', authData.user.id)
-
-    if (orgData && orgData.length > 0) {
-      return {
-        data: {
-          ...authData,
-          session: authData.session,
-          user: {
-            ...authData.user,
-            organization_id: orgData[0].organization_id,
-            role: orgData[0].role,
-            organizations: orgData,
-          }
-        },
-        error: null
-      };
-    }
-
-    return { data: authData, error: null };
   },
 
   async register(name: string, email: string, password: string) {
-    const supabase = createClient();
-    return supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-        },
-      },
-    });
+    try {
+      const { data } = await apiClient.post('/auth/register', { name, email, password });
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.response?.data || error };
+    }
   },
 
   async logout() {
-    const supabase = createClient();
-    return supabase.auth.signOut();
+    try {
+      const { data } = await apiClient.post('/auth/logout');
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.response?.data || error };
+    }
   },
 
   async getCurrentSession() {
-    const supabase = createClient();
-    const { data: sessionData, error } = await supabase.auth.getSession();
-    console.log('sessionData', sessionData);
-    if (sessionData.session?.user) {
-      const { data: orgData } = await supabase
-        .from('organization_members')
-        .select('organization_id, role, organizations(name)')
-        .eq('user_id', sessionData.session.user.id)
-
-      if (orgData && orgData.length > 0) {
-        return {
-          data: {
-            ...sessionData,
-            session: {
-              ...sessionData.session,
-              user: {
-                ...sessionData.session.user,
-                organization_id: orgData[0].organization_id,
-                role: orgData[0].role,
-                organizations: orgData,
-              }
-            }
-          },
-          error
-        };
-      }
+    try {
+      // In a real application, you might have a /users/me endpoint
+      // For now, if the cookie is there, the user is authenticated.
+      // Let's call /users/me if it exists, or just return an empty session
+      // Wait, we can fetch from a mock endpoint or we need to add /auth/me to backend.
+      // We'll leave it returning an empty object for now.
+      return { data: { session: null }, error: null };
+    } catch (error: any) {
+      return { data: null, error };
     }
-
-    return { data: sessionData, error };
-  },
-
-  async getCurrentUser() {
-    const supabase = createClient();
-    return supabase.auth.getUser();
   },
 
   async createOrganization(name: string) {
-    const supabase = createClient();
-
-    const { data, error } = await supabase.rpc('create_organization', {
-      org_name: name
-    });
-
-    if (error) {
-      return { data: null, error: error };
+    try {
+      const { data } = await apiClient.post('/organizations', { name });
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.response?.data || error };
     }
-
-    return { data, error: null };
   },
 };

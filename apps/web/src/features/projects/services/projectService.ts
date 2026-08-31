@@ -1,69 +1,28 @@
-import { createClient } from '@/lib/supabase/client';
+import { apiClient } from '@/lib/api/apiClient';
 import { Project } from '../types';
-import { store } from '@/store/store';
 
 export const projectService = {
   async getProjects() {
-    const supabase = createClient();
-    const state = store.getState();
-    const orgId = state.auth.user?.organization_id;
-
-    if (!orgId) return [] as Project[];
-
-    const { data, error } = await supabase
-      .from('projects')
-      .select(`*, creator:profiles!projects_created_by_fkey(name)`)
-      .eq('organization_id', orgId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data as Project[];
+    const { data } = await apiClient.get<Project[]>('/projects');
+    return data;
   },
 
   async getProject(id: string) {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) throw error;
-    return data as Project;
+    const { data } = await apiClient.get<Project>(`/projects/${id}`);
+    return data;
   },
 
   async createProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('projects')
-      .insert(project)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as Project;
+    const { data } = await apiClient.post<Project>('/projects', project);
+    return data;
   },
 
   async updateProject(id: string, updates: Partial<Project>) {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('projects')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as Project;
+    const { data } = await apiClient.patch<Project>(`/projects/${id}`, updates);
+    return data;
   },
 
   async deleteProject(id: string) {
-    const supabase = createClient();
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await apiClient.delete(`/projects/${id}`);
   }
 };

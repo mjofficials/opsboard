@@ -1,68 +1,29 @@
-import { createClient } from '@/lib/supabase/client';
+import { apiClient } from '@/lib/api/apiClient';
 import { TeamMember } from '../types';
 
 export const teamService = {
   async getTeamMembers() {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('invitations')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data as TeamMember[];
+    const { data } = await apiClient.get<TeamMember[]>('/teams');
+    return data;
   },
 
   async createTeamMember(teamMemberData: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>) {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('invitations')
-      .insert({
-        email: teamMemberData.email,
-        role: teamMemberData.role,
-        organization_id: teamMemberData.organization_id,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as TeamMember;
+    const { data } = await apiClient.post<TeamMember>('/teams', teamMemberData);
+    return data;
   },
 
   async acceptTeamMember(id: string) {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .rpc('accept_invitation', {
-        invitation_id: id
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as TeamMember;
+    const { data } = await apiClient.post<TeamMember>(`/teams/${id}/accept`);
+    return data;
   },
 
   async rejectTeamMember(id: string) {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .rpc('reject_invitation', {
-        invitation_id: id
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as TeamMember;
+    const { data } = await apiClient.post<TeamMember>(`/teams/${id}/reject`);
+    return data;
   },
 
   async deleteTeamMember(id: string) {
-    const supabase = createClient();
-    const { error } = await supabase
-      .from('invitations')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await apiClient.delete(`/teams/${id}`);
     return { error: null };
   },
 };

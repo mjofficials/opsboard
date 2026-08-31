@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id            String    @id @default(uuid())
+  name          String
+  logo_path     String?
+  plan          String?   @default("free")
+  billing_email String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  projects      Project[]
+  users         User[]
+}
+
+model User {
+  id                String          @id @default(uuid())
+  email             String          @unique
+  password          String
+  name              String
+  status            String          @default("ACTIVE")
+  role              String          @default("MEMBER")
+  organization_id   String?
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+  projects_assigned Project[]       @relation("ProjectAssignee")
+  projects_created  Project[]       @relation("ProjectCreator")
+  tickets_assigned  Ticket[]
+  ticket_comments   TicketComment[]
+  organization      Organization?   @relation(fields: [organization_id], references: [id])
+}
+
+model Project {
+  id              String       @id @default(uuid())
+  name            String
+  description     String?
+  status          String       @default("ACTIVE")
+  organization_id String
+  created_by      String?
+  assignee_id     String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  assignee        User?        @relation("ProjectAssignee", fields: [assignee_id], references: [id])
+  creator         User?        @relation("ProjectCreator", fields: [created_by], references: [id])
+  organization    Organization @relation(fields: [organization_id], references: [id])
+  tickets         Ticket[]
+}
+
+model Ticket {
+  id          String          @id @default(uuid())
+  title       String
+  description String
+  status      String          @default("OPEN")
+  priority    String          @default("MEDIUM")
+  project_id  String
+  assignee_id String?
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+  assignee    User?           @relation(fields: [assignee_id], references: [id])
+  project     Project         @relation(fields: [project_id], references: [id])
+  comments    TicketComment[]
+}
+
+model TicketComment {
+  id         String   @id @default(uuid())
+  ticket_id  String
+  user_id    String
+  comment    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  ticket     Ticket   @relation(fields: [ticket_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
+}

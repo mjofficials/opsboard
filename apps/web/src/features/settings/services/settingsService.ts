@@ -1,51 +1,32 @@
-import { createClient } from '@/lib/supabase/client';
+import { apiClient } from '@/lib/api/apiClient';
 import { Organization } from '../types';
 
 export const settingsService = {
   async fetchOrganization(orgId: string): Promise<Organization> {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('organizations')
-      .select('*')
-      .eq('id', orgId)
-      .single();
-    if (error) throw error;
-    return data as Organization;
+    const { data } = await apiClient.get<Organization>(`/organizations/${orgId}`);
+    return data;
   },
 
   async updateOrganization(
     orgId: string,
     updates: Partial<Organization>
   ): Promise<Organization> {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('organizations')
-      .update(updates)
-      .eq('id', orgId)
-      .select()
-      .single();
-    if (error) throw error;
-    return data as Organization;
+    const { data } = await apiClient.patch<Organization>(`/organizations/${orgId}`, updates);
+    return data;
   },
 
   async uploadOrgAvatar(orgId: string, file: File): Promise<string> {
-    const supabase = createClient();
-    const ext = file.name.split('.').pop();
-    const path = `${orgId}/logo.${ext}`;
-    const { error } = await supabase.storage
-      .from('organization-logos')
-      .upload(path, file, { upsert: true });
-    if (error) throw error;
-    const { data } = supabase.storage.from('organization-logos').getPublicUrl(path);
-    return data.publicUrl;
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data } = await apiClient.post<{ url: string }>(`/organizations/${orgId}/avatar`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return data.url;
   },
 
   async deleteOrganization(orgId: string): Promise<void> {
-    const supabase = createClient();
-    const { error } = await supabase
-      .from('organizations')
-      .delete()
-      .eq('id', orgId);
-    if (error) throw error;
+    await apiClient.delete(`/organizations/${orgId}`);
   },
 };

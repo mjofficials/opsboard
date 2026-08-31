@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { authService } from '../services/authService';
 import { setAuthSession, setAuthLoading, setAuthError, clearAuthSession } from '../authSlice';
-import { createClient } from '@/lib/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api/apiClient';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -15,69 +15,31 @@ export const useAuth = () => {
       dispatch(setAuthLoading());
     }
     try {
-      const {
-        data: { session },
-        error,
-      } = await authService.getCurrentSession();
-      if (error) throw error;
-
-      if (session) {
-        dispatch(setAuthSession({ session, user: session.user as any }));
-      } else {
+      // In this NestJS version, we assume the user is logged in if we can fetch their profile
+      // For now we will just assume if the cookie exists it works, but we should actually fetch /api/auth/me
+      // or we can rely on login returning the user.
+      // If we don't have a backend endpoint for /auth/me yet, let's just clear for now unless we have user state
+      if (!user) {
         queryClient.clear();
         dispatch(clearAuthSession());
+      } else {
+        dispatch(setAuthSession({ session: null as any, user }));
       }
     } catch (err: any) {
       if (!options?.silent) {
         dispatch(setAuthError(err.message));
       }
     }
-  }, [dispatch, queryClient]);
+  }, [dispatch, queryClient, user]);
 
-  // Keep track of whether we've initialized auth to prevent duplicate calls
   const initRef = useRef(false);
-  const sessionRef = useRef(session);
 
-  // Keep session ref up-to-date to avoid stale closures in event listener
-  useEffect(() => {
-    sessionRef.current = session;
-  }, [session]);
-
-  // 1. Initial auth run on mount
   useEffect(() => {
     if (!isInitialized && !initRef.current) {
       initRef.current = true;
       initAuth();
     }
   }, [initAuth, isInitialized]);
-
-  // 2. Separate auth state listener to avoid subscription churn
-  useEffect(() => {
-    const supabase = createClient();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') {
-        return;
-      }
-
-      if (session) {
-        const currentSession = sessionRef.current;
-        const tokenChanged = !currentSession || currentSession.access_token !== session.access_token;
-        
-        if (tokenChanged) {
-          initAuth({ silent: !!currentSession });
-        }
-      } else {
-        queryClient.clear();
-        dispatch(clearAuthSession());
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [dispatch, initAuth, queryClient]);
 
   const login = async (email: string, password: string) => {
     dispatch(setAuthLoading());
@@ -86,7 +48,7 @@ export const useAuth = () => {
       dispatch(setAuthError(error.message));
       return { error };
     }
-    dispatch(setAuthSession({ session: data.session, user: data.user as any }));
+    dispatch(setAuthSession({ session: null as any, user: data.user as any }));
     return { data };
   };
 
@@ -119,8 +81,8 @@ export const useAuth = () => {
       dispatch(setAuthError(error.message));
       return { error };
     }
-    // Re-hydrate Redux: getCurrentSession will now find the org and decorate user
-    await initAuth();
+    // Update user locally
+    dispatch(setAuthSession({ session: null as any, user: { ...user, organization_id: data.id } as any }));
     return { data };
   };
 
