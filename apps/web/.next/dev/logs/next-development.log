@@ -1,1 +1,6 @@
-[00:00:01.041] Server  LOG     ✓ Ready in 764ms
+[00:00:01.207] Server  LOG     ✓ Ready in 915ms
+[00:02:17.690] Server  LOG     ✓ Compiled in 552ms
+[00:02:26.971] Server  LOG       Reload env: .env.local
+[00:02:59.894] Server  LOG       Reload env: .env.local
+[00:03:00.006] Server  LOG     ✓ Compiled in 11ms
+[00:03:24.578] Server  LOG     ✓ Compiled in 58ms

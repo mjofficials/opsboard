@@ -5,7 +5,7 @@ import { UpdateProjectDto } from './dto/update-project.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('projects')
+@ApiTags('Project Management')
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
 @Controller('projects')

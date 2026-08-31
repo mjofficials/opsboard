@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
 AuthController = __decorate([
-    ApiTags('auth'),
+    ApiTags('Authentication'),
     Controller('auth'),
     __metadata("design:paramtypes", [AuthService])
 ], AuthController);

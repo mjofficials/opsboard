@@ -9,7 +9,7 @@ async function bootstrap() {
   
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/v1');
 
   const config = new DocumentBuilder()
     .setTitle('Opsboard API')
@@ -18,7 +18,7 @@ async function bootstrap() {
     .addCookieAuth('access_token')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, documentFactory);
+  SwaggerModule.setup('swagger', app, documentFactory);
 
   app.enableCors({
     origin: 'http://localhost:3000', // Next.js port

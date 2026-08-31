@@ -87,7 +87,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "remove", null);
 ProjectsController = __decorate([
-    ApiTags('projects'),
+    ApiTags('Project Management'),
     ApiCookieAuth('access_token'),
     UseGuards(JwtAuthGuard),
     Controller('projects'),

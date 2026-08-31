@@ -7,7 +7,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api/v1');
     const config = new DocumentBuilder()
         .setTitle('Opsboard API')
         .setDescription('The Opsboard API documentation')
@@ -15,7 +15,7 @@ async function bootstrap() {
         .addCookieAuth('access_token')
         .build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api/docs', app, documentFactory);
+    SwaggerModule.setup('swagger', app, documentFactory);
     app.enableCors({
         origin: 'http://localhost:3000',
         credentials: true,
