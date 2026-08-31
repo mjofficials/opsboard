@@ -15,15 +15,13 @@ export const useAuth = () => {
       dispatch(setAuthLoading());
     }
     try {
-      // In this NestJS version, we assume the user is logged in if we can fetch their profile
-      // For now we will just assume if the cookie exists it works, but we should actually fetch /api/auth/me
-      // or we can rely on login returning the user.
-      // If we don't have a backend endpoint for /auth/me yet, let's just clear for now unless we have user state
-      if (!user) {
+      const { data, error } = await authService.getCurrentSession();
+      
+      if (error || !data?.user) {
         queryClient.clear();
         dispatch(clearAuthSession());
       } else {
-        dispatch(setAuthSession({ session: null as any, user }));
+        dispatch(setAuthSession({ session: null as any, user: data.user }));
       }
     } catch (err: any) {
       if (!options?.silent) {
@@ -59,6 +57,7 @@ export const useAuth = () => {
       dispatch(setAuthError(error.message));
       return { error };
     }
+    dispatch(setAuthSession({ session: null as any, user: data.user as any }));
     return { data };
   };
 

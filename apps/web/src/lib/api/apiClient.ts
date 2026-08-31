@@ -14,8 +14,8 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Optional: Handle unauthorized access globally (e.g. redirect to login)
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth')) {
-        window.location.href = '/auth';
+      if (typeof window !== 'undefined' && !['/login', '/register', '/onboarding'].some(path => window.location.pathname.includes(path))) {
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);

@@ -23,10 +23,19 @@ export class OrganizationsService {
     }
   }
 
-  async create(createOrganizationDto: CreateOrganizationDto) {
-    return this.prisma.organization.create({
+  async create(createOrganizationDto: CreateOrganizationDto, userId?: string) {
+    const org = await this.prisma.organization.create({
       data: createOrganizationDto,
     });
+
+    if (userId) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { organizationId: org.id },
+      });
+    }
+
+    return org;
   }
 
   async findOne(id: string) {

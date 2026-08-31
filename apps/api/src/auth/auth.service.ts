@@ -33,16 +33,38 @@ export class AuthService {
             name: `${registerDto.name}'s Organization`,
           }
         }
-      }
+      },
+      include: { organization: true }
     });
 
-    const { password, ...result } = user;
-    return result;
+    const payload = { sub: user.id, email: user.email, role: user.role };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        organization_id: user.organizationId,
+        organizations: [
+          {
+            organization_id: user.organizationId,
+            role: user.role,
+            organizations: {
+              name: user.organization.name,
+              logo_path: user.organization.logoPath
+            }
+          }
+        ]
+      }
+    };
   }
 
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email }
+      where: { email: loginDto.email },
+      include: { organization: true }
     });
 
     if (!user) {
@@ -63,7 +85,18 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role
+        role: user.role,
+        organization_id: user.organizationId,
+        organizations: [
+          {
+            organization_id: user.organizationId,
+            role: user.role,
+            organizations: {
+              name: user.organization.name,
+              logo_path: user.organization.logoPath
+            }
+          }
+        ]
       }
     };
   }

@@ -8,7 +8,8 @@ import {
   Delete, 
   UseGuards, 
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
+  Req
 } from '@nestjs/common';
 import 'multer';
 
@@ -29,8 +30,9 @@ export class OrganizationsController {
   @Post()
   @ApiOperation({ summary: 'Create a new organization' })
   @ApiResponse({ status: 201, description: 'The organization has been successfully created.' })
-  create(@Body() createOrganizationDto: CreateOrganizationDto) {
-    return this.organizationsService.create(createOrganizationDto);
+  create(@Body() createOrganizationDto: CreateOrganizationDto, @Req() req: any) {
+    const userId = req.user?.id;
+    return this.organizationsService.create(createOrganizationDto, userId);
   }
 
   @Get(':id')

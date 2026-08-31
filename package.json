@@ -4,5 +4,15 @@
   "private": true,
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"API,WEB\" -c \"blue,magenta\" \"npm run start:dev -w api\" \"npm run dev -w @opsboard/web\"",
+    "dev:api": "npm run start:dev -w api",
+    "dev:web": "npm run dev -w @opsboard/web",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.4"
+  }
 }

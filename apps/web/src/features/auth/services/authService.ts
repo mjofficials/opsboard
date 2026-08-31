@@ -30,14 +30,10 @@ export const authService = {
 
   async getCurrentSession() {
     try {
-      // In a real application, you might have a /users/me endpoint
-      // For now, if the cookie is there, the user is authenticated.
-      // Let's call /users/me if it exists, or just return an empty session
-      // Wait, we can fetch from a mock endpoint or we need to add /auth/me to backend.
-      // We'll leave it returning an empty object for now.
-      return { data: { session: null }, error: null };
+      const { data } = await apiClient.get('/auth/me');
+      return { data, error: null };
     } catch (error: any) {
-      return { data: null, error };
+      return { data: null, error: error.response?.data || error };
     }
   },
 
