@@ -28,6 +28,11 @@ export class AuthService {
         email: registerDto.email,
         password: hashedPassword,
         name: registerDto.name,
+        organization: {
+          create: {
+            name: `${registerDto.name}'s Organization`,
+          }
+        }
       }
     });
 

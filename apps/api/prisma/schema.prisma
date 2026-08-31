@@ -6,16 +6,39 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PlanType {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
 model Organization {
-  id            String    @id @default(uuid())
-  name          String
-  logo_path     String?
-  plan          String?   @default("free")
-  billing_email String?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  projects      Project[]
-  users         User[]
+  id               String    @id @default(uuid())
+  name             String
+  logoPath         String?   @map("logo_path")
+  plan             PlanType? @default(FREE)
+  billingEmail     String?   @map("billing_email")
+  stripeCustomerId String?   @map("stripe_customer_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  projects         Project[]
+  users            User[]
+
+  @@map("organizations")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+  VIEWER
+  OWNER
 }
 
 model User {
@@ -23,56 +46,105 @@ model User {
   email             String          @unique
   password          String
   name              String
-  status            String          @default("ACTIVE")
-  role              String          @default("MEMBER")
-  organization_id   String?
-  created_at        DateTime        @default(now())
-  updated_at        DateTime        @updatedAt
-  projects_assigned Project[]       @relation("ProjectAssignee")
-  projects_created  Project[]       @relation("ProjectCreator")
-  tickets_assigned  Ticket[]
-  ticket_comments   TicketComment[]
-  organization      Organization?   @relation(fields: [organization_id], references: [id])
+  status            UserStatus      @default(ACTIVE)
+  role              Role            @default(MEMBER)
+  organizationId    String          @map("organization_id")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  projectsAssigned  Project[]       @relation("ProjectAssignee")
+  projectsCreated   Project[]       @relation("ProjectCreator")
+  
+  ticketsAssigned   Ticket[]        @relation("TicketAssignee")
+  ticketsCreated    Ticket[]        @relation("TicketCreator")
+  
+  ticketComments    TicketComment[]
+  
+  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId])
+  @@map("users")
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
 }
 
 model Project {
-  id              String       @id @default(uuid())
-  name            String
-  description     String?
-  status          String       @default("ACTIVE")
-  organization_id String
-  created_by      String?
-  assignee_id     String?
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  assignee        User?        @relation("ProjectAssignee", fields: [assignee_id], references: [id])
-  creator         User?        @relation("ProjectCreator", fields: [created_by], references: [id])
-  organization    Organization @relation(fields: [organization_id], references: [id])
-  tickets         Ticket[]
+  id             String        @id @default(uuid())
+  name           String
+  description    String?
+  status         ProjectStatus @default(ACTIVE)
+  organizationId String        @map("organization_id")
+  createdBy      String?       @map("created_by")
+  assigneeId     String?       @map("assignee_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  
+  assignee       User?         @relation("ProjectAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  creator        User?         @relation("ProjectCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  tickets        Ticket[]
+
+  @@index([organizationId])
+  @@index([createdBy])
+  @@index([assigneeId])
+  @@map("projects")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  REVIEW
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
 
 model Ticket {
-  id          String          @id @default(uuid())
+  id          String         @id @default(uuid())
   title       String
   description String
-  status      String          @default("OPEN")
-  priority    String          @default("MEDIUM")
-  project_id  String
-  assignee_id String?
-  created_at  DateTime        @default(now())
-  updated_at  DateTime        @updatedAt
-  assignee    User?           @relation(fields: [assignee_id], references: [id])
-  project     Project         @relation(fields: [project_id], references: [id])
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  projectId   String         @map("project_id")
+  assigneeId  String?        @map("assignee_id")
+  createdBy   String         @map("created_by")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  
+  assignee    User?          @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  creator     User           @relation("TicketCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
   comments    TicketComment[]
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([createdBy])
+  @@map("tickets")
 }
 
 model TicketComment {
-  id         String   @id @default(uuid())
-  ticket_id  String
-  user_id    String
-  comment    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  ticket     Ticket   @relation(fields: [ticket_id], references: [id])
-  user       User     @relation(fields: [user_id], references: [id])
+  id        String   @id @default(uuid())
+  ticketId  String   @map("ticket_id")
+  userId    String   @map("user_id")
+  comment   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([userId])
+  @@map("ticket_comments")
 }

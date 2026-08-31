@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ProjectStatus } from '@prisma/client';
 
 export class CreateProjectDto {
   @ApiProperty({ example: 'New Website Launch' })
@@ -12,18 +13,18 @@ export class CreateProjectDto {
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ example: 'ACTIVE', enum: ['ACTIVE', 'INACTIVE'] })
-  @IsString()
+  @ApiProperty({ example: 'ACTIVE', enum: ProjectStatus })
+  @IsEnum(ProjectStatus)
   @IsOptional()
-  status?: string;
+  status?: ProjectStatus;
 
   @ApiProperty({ example: 'uuid-org-id' })
   @IsUUID()
   @IsNotEmpty()
-  organization_id!: string;
+  organizationId!: string;
 
   @ApiPropertyOptional({ example: 'uuid-user-id' })
   @IsUUID()
   @IsOptional()
-  assignee_id?: string;
+  assigneeId?: string;
 }

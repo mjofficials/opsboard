@@ -11,7 +11,7 @@ export class ProjectsService {
     return this.prisma.project.create({
       data: {
         ...createProjectDto,
-        created_by: userId,
+        createdBy: userId,
       },
     });
   }
