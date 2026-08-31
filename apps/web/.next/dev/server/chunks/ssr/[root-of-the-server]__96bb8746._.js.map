@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 38, "column": 0}, "map": {"version":3,"sources":["file:///home/mj/Learning/opsboard/apps/web/src/app/%28dashboard%29/dashboard/page.tsx"],"sourcesContent":["export default function Page() {\n  return <div>Dashboard Page</div>;\n}\n"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACtB,qBAAO,8OAAC;kBAAI;;;;;;AACd"}}]
-}

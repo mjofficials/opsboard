@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../../../apps/web/src/app/%28dashboard%29/settings/page.tsx"],"sourcesContent":["import { redirect } from 'next/navigation';\n\nexport default function SettingsPage() {\n  redirect('/settings/general');\n}\n"],"names":[],"mappings":"2cAAA,EAAA,CAAA,CAAA,OAAA,IAAA,EAAA,EAAA,CAAA,CAAA,OAEe,SAAS,IACtB,CAAA,EAAA,EAAA,QAAA,AAAQ,EAAC,oBACX"}

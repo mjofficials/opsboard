@@ -17,7 +17,7 @@ import {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, session, isLoading, createOrganization } = useAuth();
+  const { user, isLoading, createOrganization } = useAuth();
   const [orgName, setOrgName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +26,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (isLoading) return;
 
-    if (!session) {
+    if (!user) {
       router.replace("/login");
       return;
     }
@@ -34,7 +34,7 @@ export default function OnboardingPage() {
     if (user?.organization_id) {
       router.replace("/dashboard");
     }
-  }, [session, user, isLoading, router]);
+  }, [user, isLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +58,7 @@ export default function OnboardingPage() {
   };
 
   // Render nothing while auth resolves or a redirect is in flight
-  if (isLoading || !session || user?.organization_id) {
+  if (isLoading || !user || user?.organization_id) {
     return null;
   }
 

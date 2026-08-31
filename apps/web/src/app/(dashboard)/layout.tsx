@@ -26,14 +26,14 @@ export default function Page({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme()
-  const { user, session, isLoading, isInitialized, logout } = useAuth()
+  const { user, isLoading, isInitialized, logout } = useAuth()
   const initialRedirectDone = useRef(false);
 
   useEffect(() => {
     // Wait until auth has fully resolved before making guard decisions
     if (isLoading || !isInitialized) return;
 
-    if (!session) {
+    if (!user) {
       router.replace('/login');
       return;
     }
@@ -53,7 +53,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
         return;
       }
     }
-  }, [session, user, isLoading, isInitialized, router, pathname]);
+  }, [user, isLoading, isInitialized, router, pathname]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && pathname && pathname !== '/login' && pathname !== '/register' && pathname !== '/onboarding') {
@@ -70,7 +70,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
   }
 
   // Render nothing while auth is resolving or a redirect is pending
-  if (isLoading || !isInitialized || !session || !user?.organization_id) {
+  if (isLoading || !isInitialized || !user || !user?.organization_id) {
     return null;
   }
 

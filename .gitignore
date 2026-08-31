@@ -14,8 +14,14 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
+
+# Agent configurations
+.agents/
+.claude*
+claude.json
+.cursor*
 
 # production
 /build

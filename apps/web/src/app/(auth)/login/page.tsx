@@ -22,7 +22,6 @@ export default function LoginPage() {
 
   const handleLogin = async (data: LoginFormValues) => {
     const { error: loginError } = await login(data.email, data.password);
-
     if (!loginError) {
       router.push("/dashboard");
     }
