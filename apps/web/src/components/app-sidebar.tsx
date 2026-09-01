@@ -39,13 +39,11 @@ const sidebarData = {
   teams: [],
 };
 
-import { setActiveOrganization } from '@/features/auth/authSlice';
-import { useAppDispatch, useAppSelector } from '@/store/store';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, setActiveOrganization } = useAuthStore();
 
   const userTeams = React.useMemo(() => {
     const organizations = user?.organizations;
@@ -63,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [user?.organization_id, userTeams]);
 
   const handleTeamChange = (teamId: string) => {
-    dispatch(setActiveOrganization(teamId));
+    setActiveOrganization(teamId);
   };
 
   return (

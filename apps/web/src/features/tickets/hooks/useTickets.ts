@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ticketService } from '../services/ticketService';
 import { Ticket } from '../types';
-import { useAppSelector } from '@/store/store';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export const useTickets = () => {
   const queryClient = useQueryClient();
-  const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
+  const activeOrgId = useAuthStore((state) => state.user?.organization_id);
 
   const {
     data: tickets,

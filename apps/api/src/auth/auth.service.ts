@@ -28,16 +28,26 @@ export class AuthService {
         email: registerDto.email,
         password: hashedPassword,
         name: registerDto.name,
-        organization: {
+        memberships: {
           create: {
-            name: `${registerDto.name}'s Organization`,
+            role: 'OWNER',
+            organization: {
+              create: {
+                name: `${registerDto.name}'s Organization`,
+              }
+            }
           }
         }
       },
-      include: { organization: true }
-    });
+      include: {
+        memberships: {
+          include: { organization: true }
+        }
+      }
+    } as any);
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const activeMembership = (user as any).memberships[0];
+    const payload = { sub: user.id, email: user.email, tenantId: activeMembership?.organizationId };
 
     return {
       access_token: this.jwtService.sign(payload),
@@ -45,18 +55,13 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
-        organization_id: user.organizationId,
-        organizations: [
-          {
-            organization_id: user.organizationId,
-            role: user.role,
-            organizations: {
-              name: user.organization.name,
-              logo_path: user.organization.logoPath
-            }
-          }
-        ]
+        tenant_id: activeMembership?.organizationId,
+        organizations: (user as any).memberships.map((m: any) => ({
+          organization_id: m.organizationId,
+          role: m.role,
+          name: m.organization.name,
+          logo_path: m.organization.logoPath
+        }))
       }
     };
   }
@@ -64,8 +69,12 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
-      include: { organization: true }
-    });
+      include: {
+        memberships: {
+          include: { organization: true }
+        }
+      }
+    } as any);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -77,7 +86,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const activeMembership = (user as any).memberships[0];
+    const payload = { sub: user.id, email: user.email, tenantId: activeMembership?.organizationId };
     
     return {
       access_token: this.jwtService.sign(payload),
@@ -85,18 +95,13 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
-        organization_id: user.organizationId,
-        organizations: [
-          {
-            organization_id: user.organizationId,
-            role: user.role,
-            organizations: {
-              name: user.organization.name,
-              logo_path: user.organization.logoPath
-            }
-          }
-        ]
+        tenant_id: activeMembership?.organizationId,
+        organizations: (user as any).memberships.map((m: any) => ({
+          organization_id: m.organizationId,
+          role: m.role,
+          name: m.organization.name,
+          logo_path: m.organization.logoPath
+        }))
       }
     };
   }

@@ -23,7 +23,7 @@ model Organization {
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
   projects         Project[]
-  users            User[]
+  members          OrganizationMember[]
 
   @@map("organizations")
 }
@@ -41,16 +41,33 @@ enum Role {
   OWNER
 }
 
+model OrganizationMember {
+  id               String       @id @default(uuid())
+  userId           String       @map("user_id")
+  organizationId   String       @map("organization_id")
+  role             Role         @default(MEMBER)
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([userId])
+  @@index([organizationId])
+  @@map("organization_members")
+}
+
 model User {
   id                String          @id @default(uuid())
   email             String          @unique
   password          String
   name              String
   status            UserStatus      @default(ACTIVE)
-  role              Role            @default(MEMBER)
-  organizationId    String          @map("organization_id")
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  memberships       OrganizationMember[]
 
   projectsAssigned  Project[]       @relation("ProjectAssignee")
   projectsCreated   Project[]       @relation("ProjectCreator")
@@ -59,10 +76,7 @@ model User {
   ticketsCreated    Ticket[]        @relation("TicketCreator")
   
   ticketComments    TicketComment[]
-  
-  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
 
-  @@index([organizationId])
   @@map("users")
 }
 

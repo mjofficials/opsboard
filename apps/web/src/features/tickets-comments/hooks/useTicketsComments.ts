@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ticketCommentsService } from '../services/ticketsCommentsService';
 import { TicketComment } from '../types';
-import { useAppSelector } from '@/store/store';
 
 export const useTicketsComments = (ticketId?: string) => {
     const queryClient = useQueryClient();

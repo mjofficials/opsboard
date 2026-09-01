@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Project } from '../types';
 import { projectService } from '../services/projectService';
-import { useAppSelector } from '@/store/store';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export const useProjects = () => {
     const queryClient = useQueryClient();
-    const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
+    const activeOrgId = useAuthStore((state) => state.user?.organization_id);
 
     const {
         data: projects,
@@ -87,7 +87,7 @@ export const useProjects = () => {
 
 export const useProject = (id: string) => {
     const queryClient = useQueryClient();
-    const activeOrgId = useAppSelector((state) => state.auth.user?.organization_id);
+    const activeOrgId = useAuthStore((state) => state.user?.organization_id);
 
     return useQuery({
         queryKey: ['projects', id],

@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { useAppSelector } from '@/store/store';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function AppGlobalLoader() {
-  const isInitialized = useAppSelector((state) => state.auth.isInitialized);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
   const [showLoader, setShowLoader] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 

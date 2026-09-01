@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { ThemeProvider } from "next-themes";
-import { ReduxProvider } from "@/store/ReduxProvider";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AppGlobalLoader from "@/components/common/AppGlobalLoader";
@@ -33,20 +32,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ReduxProvider>
-          <ReactQueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <AppGlobalLoader />
-              {children}
-              <Toaster position="top-center" />
-            </ThemeProvider>
-          </ReactQueryProvider>
-        </ReduxProvider>
+        <ReactQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AppGlobalLoader />
+            {children}
+            <Toaster position="top-center" />
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

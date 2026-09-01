@@ -1,34 +1,32 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/store';
+import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '../services/authService';
-import { setAuthSession, setAuthLoading, setAuthError, clearAuthSession } from '../authSlice';
 import { useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/apiClient';
 
 export const useAuth = () => {
-  const dispatch = useAppDispatch();
-  const { user, session, status, error, isInitialized } = useAppSelector((state) => state.auth);
+  const { user, session, status, error, isInitialized, setAuthLoading, setAuthSession, clearAuthSession, setAuthError } = useAuthStore();
   const queryClient = useQueryClient();
 
   const initAuth = useCallback(async (options?: { silent?: boolean }) => {
     if (!options?.silent) {
-      dispatch(setAuthLoading());
+      setAuthLoading();
     }
     try {
       const { data, error } = await authService.getCurrentSession();
       
       if (error || !data?.user) {
         queryClient.clear();
-        dispatch(clearAuthSession());
+        clearAuthSession();
       } else {
-        dispatch(setAuthSession({ session: null as any, user: data.user }));
+        setAuthSession({ session: null as any, user: data.user });
       }
     } catch (err: any) {
       if (!options?.silent) {
-        dispatch(setAuthError(err.message));
+        setAuthError(err.message);
       }
     }
-  }, [dispatch, queryClient, user]);
+  }, [setAuthLoading, setAuthSession, clearAuthSession, setAuthError, queryClient]);
 
   const initRef = useRef(false);
 
@@ -40,48 +38,48 @@ export const useAuth = () => {
   }, [initAuth, isInitialized]);
 
   const login = async (email: string, password: string) => {
-    dispatch(setAuthLoading());
+    setAuthLoading();
     const { data, error } = await authService.login(email, password);
     if (error) {
-      dispatch(setAuthError(error.message));
+      setAuthError(error.message);
       return { error };
     }
-    dispatch(setAuthSession({ session: null as any, user: data.user as any }));
+    setAuthSession({ session: null as any, user: data.user as any });
     return { data };
   };
 
   const register = async (name: string, email: string, password: string) => {
-    dispatch(setAuthLoading());
+    setAuthLoading();
     const { data, error } = await authService.register(name, email, password);
     if (error) {
-      dispatch(setAuthError(error.message));
+      setAuthError(error.message);
       return { error };
     }
-    dispatch(setAuthSession({ session: null as any, user: data.user as any }));
+    setAuthSession({ session: null as any, user: data.user as any });
     return { data };
   };
 
   const logout = async () => {
-    dispatch(setAuthLoading());
+    setAuthLoading();
     const { error } = await authService.logout();
     if (error) {
-      dispatch(setAuthError(error.message));
+      setAuthError(error.message);
       return { error };
     }
     queryClient.clear();
-    dispatch(clearAuthSession());
+    clearAuthSession();
   };
 
   const createOrganization = async (name: string) => {
     if (!user?.id) return { error: new Error('Not authenticated') };
-    dispatch(setAuthLoading());
+    setAuthLoading();
     const { data, error } = await authService.createOrganization(name);
     if (error) {
-      dispatch(setAuthError(error.message));
+      setAuthError(error.message);
       return { error };
     }
     // Update user locally
-    dispatch(setAuthSession({ session: null as any, user: { ...user, organization_id: data.id } as any }));
+    setAuthSession({ session: null as any, user: { ...user, organization_id: data.id } as any });
     return { data };
   };
 
