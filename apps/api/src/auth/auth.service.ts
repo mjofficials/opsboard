@@ -28,16 +28,6 @@ export class AuthService {
         email: registerDto.email,
         password: hashedPassword,
         name: registerDto.name,
-        memberships: {
-          create: {
-            role: 'OWNER',
-            organization: {
-              create: {
-                name: `${registerDto.name}'s Organization`,
-              }
-            }
-          }
-        }
       },
       include: {
         memberships: {
@@ -56,6 +46,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         tenant_id: activeMembership?.organizationId,
+        organization_id: activeMembership?.organizationId,
         organizations: (user as any).memberships.map((m: any) => ({
           organization_id: m.organizationId,
           role: m.role,
@@ -96,6 +87,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         tenant_id: activeMembership?.organizationId,
+        organization_id: activeMembership?.organizationId,
         organizations: (user as any).memberships.map((m: any) => ({
           organization_id: m.organizationId,
           role: m.role,

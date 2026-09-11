@@ -14,7 +14,7 @@ class EnvironmentVariables {
 
   @IsNumber()
   @IsOptional()
-  PORT: number = 3000;
+  PORT: number = 4000;
 
   @IsString()
   DATABASE_URL: string;

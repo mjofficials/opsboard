@@ -5,6 +5,7 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 
 
 @Injectable()
@@ -19,7 +20,14 @@ export class OrganizationsService {
     const supabaseKey = this.configService.get<string>('SUPABASE_KEY') || '';
     
     if (supabaseUrl && supabaseKey) {
-      this.supabase = createClient(supabaseUrl, supabaseKey);
+      this.supabase = createClient(supabaseUrl, supabaseKey, {
+        auth: {
+          persistSession: false, // best practice for server-side
+        },
+        realtime: {
+          transport: WebSocket as any,
+        },
+      });
     }
   }
 
@@ -29,9 +37,12 @@ export class OrganizationsService {
     });
 
     if (userId) {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { organizationId: org.id },
+      await this.prisma.organizationMember.create({
+        data: {
+          userId,
+          organizationId: org.id,
+          role: 'OWNER',
+        },
       });
     }
 

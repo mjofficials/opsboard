@@ -13,7 +13,7 @@ enum PlanType {
 }
 
 model Organization {
-  id               String    @id @default(uuid())
+  id               String    @id @default(uuid()) @db.Uuid
   name             String
   logoPath         String?   @map("logo_path")
   plan             PlanType? @default(FREE)
@@ -22,9 +22,10 @@ model Organization {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
-  projects         Project[]
-  members          OrganizationMember[]
+  projects Project[]
+  members  OrganizationMember[]
 
+  @@index([stripeCustomerId])
   @@map("organizations")
 }
 
@@ -42,40 +43,39 @@ enum Role {
 }
 
 model OrganizationMember {
-  id               String       @id @default(uuid())
-  userId           String       @map("user_id")
-  organizationId   String       @map("organization_id")
-  role             Role         @default(MEMBER)
-  createdAt        DateTime     @default(now()) @map("created_at")
-  updatedAt        DateTime     @updatedAt @map("updated_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  role           Role     @default(MEMBER)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, organizationId])
-  @@index([userId])
   @@index([organizationId])
   @@map("organization_members")
 }
 
 model User {
-  id                String          @id @default(uuid())
-  email             String          @unique
-  password          String
-  name              String
-  status            UserStatus      @default(ACTIVE)
-  createdAt         DateTime        @default(now()) @map("created_at")
-  updatedAt         DateTime        @updatedAt @map("updated_at")
+  id        String     @id @default(uuid()) @db.Uuid
+  email     String     @unique
+  password  String
+  name      String
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
 
-  memberships       OrganizationMember[]
+  memberships OrganizationMember[]
 
-  projectsAssigned  Project[]       @relation("ProjectAssignee")
-  projectsCreated   Project[]       @relation("ProjectCreator")
-  
-  ticketsAssigned   Ticket[]        @relation("TicketAssignee")
-  ticketsCreated    Ticket[]        @relation("TicketCreator")
-  
-  ticketComments    TicketComment[]
+  projectsAssigned Project[] @relation("ProjectAssignee")
+  projectsCreated  Project[] @relation("ProjectCreator")
+
+  ticketsAssigned Ticket[] @relation("TicketAssignee")
+  ticketsCreated  Ticket[] @relation("TicketCreator")
+
+  ticketComments TicketComment[]
 
   @@map("users")
 }
@@ -87,22 +87,23 @@ enum ProjectStatus {
 }
 
 model Project {
-  id             String        @id @default(uuid())
+  id             String        @id @default(uuid()) @db.Uuid
   name           String
   description    String?
   status         ProjectStatus @default(ACTIVE)
-  organizationId String        @map("organization_id")
-  createdBy      String?       @map("created_by")
-  assigneeId     String?       @map("assignee_id")
+  organizationId String        @map("organization_id") @db.Uuid
+  createdBy      String?       @map("created_by") @db.Uuid
+  assigneeId     String?       @map("assignee_id") @db.Uuid
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
-  
-  assignee       User?         @relation("ProjectAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  creator        User?         @relation("ProjectCreator", fields: [createdBy], references: [id], onDelete: SetNull)
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
-  tickets        Ticket[]
 
+  assignee     User?        @relation("ProjectAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  creator      User?        @relation("ProjectCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  tickets Ticket[]
+
+  @@index([status])
   @@index([organizationId])
   @@index([createdBy])
   @@index([assigneeId])
@@ -125,40 +126,42 @@ enum TicketPriority {
 }
 
 model Ticket {
-  id          String         @id @default(uuid())
+  id          String         @id @default(uuid()) @db.Uuid
   title       String
   description String
   status      TicketStatus   @default(OPEN)
   priority    TicketPriority @default(MEDIUM)
-  projectId   String         @map("project_id")
-  assigneeId  String?        @map("assignee_id")
-  createdBy   String         @map("created_by")
+  projectId   String         @map("project_id") @db.Uuid
+  assigneeId  String?        @map("assignee_id") @db.Uuid
+  createdBy   String?        @map("created_by") @db.Uuid
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime       @updatedAt @map("updated_at")
-  
-  assignee    User?          @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  creator     User           @relation("TicketCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  comments    TicketComment[]
 
+  assignee User?           @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  creator  User?           @relation("TicketCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  project  Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  comments TicketComment[]
+
+  @@index([status])
   @@index([projectId])
+  @@index([projectId, status])
   @@index([assigneeId])
   @@index([createdBy])
   @@map("tickets")
 }
 
 model TicketComment {
-  id        String   @id @default(uuid())
-  ticketId  String   @map("ticket_id")
-  userId    String   @map("user_id")
+  id        String   @id @default(uuid()) @db.Uuid
+  ticketId  String   @map("ticket_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
   comment   String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
-  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([ticketId])
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
   @@index([userId])
   @@map("ticket_comments")
 }
