@@ -42,6 +42,7 @@ export class OrganizationsService {
           userId,
           organizationId: org.id,
           role: 'OWNER',
+          email: ''
         },
       });
     }

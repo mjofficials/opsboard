@@ -42,18 +42,28 @@ enum Role {
   OWNER
 }
 
-model OrganizationMember {
-  id             String   @id @default(uuid()) @db.Uuid
-  userId         String   @map("user_id") @db.Uuid
-  organizationId String   @map("organization_id") @db.Uuid
-  role           Role     @default(MEMBER)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+enum MemberStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REJECTED
+}
 
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+model OrganizationMember {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String?      @map("user_id") @db.Uuid
+  email          String
+  organizationId String       @map("organization_id") @db.Uuid
+  role           Role         @default(MEMBER)
+  status         MemberStatus @default(PENDING)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  user         User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, organizationId])
+  @@unique([email, organizationId])
   @@index([organizationId])
   @@map("organization_members")
 }
