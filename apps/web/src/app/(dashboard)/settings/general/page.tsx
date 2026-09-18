@@ -21,7 +21,7 @@ export default function GeneralSettingsPage() {
   const isAdmin = user?.role === 'ADMIN';
   const isMember = user?.role === 'MEMBER';
   const { organization, isLoading, updateOrganization, isUpdating } = useOrganization(
-    user?.organization_id
+    user?.organizationId
   );
 
   const [form, setForm] = useState<Partial<Organization>>({});
@@ -55,10 +55,10 @@ export default function GeneralSettingsPage() {
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user?.organization_id) return;
+    if (!file || !user?.organizationId) return;
     setIsUploadingAvatar(true);
     try {
-      const url = await settingsService.uploadOrgAvatar(user.organization_id, file);
+      const url = await settingsService.uploadOrgAvatar(user.organizationId, file);
       const { error } = await updateOrganization({ logo_path: url });
       if (error) throw new Error(error);
       toast.success('Logo updated');

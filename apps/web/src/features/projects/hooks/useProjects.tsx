@@ -5,7 +5,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 export const useProjects = () => {
     const queryClient = useQueryClient();
-    const activeOrgId = useAuthStore((state) => state.user?.organization_id);
+    const activeOrgId = useAuthStore((state) => state.user?.organizationId);
 
     const {
         data: projects,
@@ -87,7 +87,7 @@ export const useProjects = () => {
 
 export const useProject = (id: string) => {
     const queryClient = useQueryClient();
-    const activeOrgId = useAuthStore((state) => state.user?.organization_id);
+    const activeOrgId = useAuthStore((state) => state.user?.organizationId);
 
     return useQuery({
         queryKey: ['projects', id],

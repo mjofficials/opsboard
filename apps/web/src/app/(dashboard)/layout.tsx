@@ -38,7 +38,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (!user?.organization_id) {
+    if (!user?.organizationId) {
       router.replace('/onboarding');
       return;
     }
@@ -70,7 +70,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
   }
 
   // Render nothing while auth is resolving or a redirect is pending
-  if (isLoading || !isInitialized || !user || !user?.organization_id) {
+  if (isLoading || !isInitialized || !user || !user?.organizationId) {
     return null;
   }
 

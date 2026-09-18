@@ -5,7 +5,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 export const useTickets = () => {
   const queryClient = useQueryClient();
-  const activeOrgId = useAuthStore((state) => state.user?.organization_id);
+  const activeOrgId = useAuthStore((state) => state.user?.organizationId);
 
   const {
     data: tickets,
@@ -23,7 +23,7 @@ export const useTickets = () => {
   };
 
   const addMutation = useMutation({
-    mutationFn: (ticketData: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) =>
+    mutationFn: (ticketData: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt'>) =>
       ticketService.createTicket(ticketData),
     onSuccess: invalidateTickets,
   });
@@ -46,7 +46,7 @@ export const useTickets = () => {
   });
 
   // Wrapping mutations to maintain the same API return format `{ error }`
-  const addTicket = async (ticketData: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) => {
+  const addTicket = async (ticketData: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       await addMutation.mutateAsync(ticketData);
       return { error: null };

@@ -1,4 +1,4 @@
-export type ProjectStatus = 'ACTIVE' | 'INACTIVE';
+export type ProjectStatus = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED';
 
 export interface Project {
     id: string;
@@ -6,7 +6,7 @@ export interface Project {
     description?: string;
     status?: ProjectStatus;
     created_by?: string; // User ID
-    organization_id: string; // Organization ID
+    organizationId: string; // Organization ID
     assignee_id?: string; // User ID
     created_at: string;
     updated_at: string;

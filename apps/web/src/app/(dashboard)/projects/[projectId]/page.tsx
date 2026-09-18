@@ -36,7 +36,7 @@ export default function ProjectWorkspacePage({ params }: { params: Promise<{ pro
   const { data: project, isLoading: projectLoading } = useProject(projectId)
   const { tickets, isLoading: ticketsLoading } = useTickets()
 
-  const projectTickets = tickets?.filter(t => t.project_id === projectId) || []
+  const projectTickets = tickets?.filter(t => t.projectId === projectId) || []
 
   if (projectLoading || ticketsLoading) {
     return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading workspace...</div>
@@ -103,7 +103,7 @@ export default function ProjectWorkspacePage({ params }: { params: Promise<{ pro
                       </div>
                       <div className="flex justify-between items-center text-xs text-muted-foreground">
                         <span className="capitalize">{toTitleCase(ticket.status)}</span>
-                        <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                        <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
                       </div>
                     </button>
                   )

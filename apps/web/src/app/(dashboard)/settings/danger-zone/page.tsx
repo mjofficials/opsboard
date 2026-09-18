@@ -25,7 +25,7 @@ import { TriangleAlert } from 'lucide-react';
 export default function DangerZonePage() {
   const { user, logout } = useAuth();
   const { organization, deleteOrganization, isDeleting } = useOrganization(
-    user?.organization_id
+    user?.organizationId
   );
   const router = useRouter();
   const [confirmText, setConfirmText] = useState('');

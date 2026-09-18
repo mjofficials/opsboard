@@ -79,7 +79,7 @@ export const useAuth = () => {
       return { error };
     }
     // Update user locally
-    setAuthSession({ session: null as any, user: { ...user, organization_id: data.id } as any });
+    setAuthSession({ session: null as any, user: { ...user, organizationId: data.id } as any });
     return { data };
   };
 

@@ -112,7 +112,7 @@ export function TicketSheet({
 
     const handleCreate = async (data: TicketFormValues) => {
         console.log("data", data);
-        if (!user?.id || !user?.organization_id) {
+        if (!user?.id || !user?.organizationId) {
             toast.error("User does not have an active organization")
             return
         }
@@ -122,7 +122,7 @@ export function TicketSheet({
             title: data.title,
             status: data.status,
             priority: data.priority,
-            project_id: params.projectId as string,
+            projectId: params.projectId as string,
             description: data.description,
         })
         setIsPending(false)
@@ -143,7 +143,7 @@ export function TicketSheet({
             title: data.title,
             status: data.status,
             priority: data.priority,
-            project_id: params.projectId as string,
+            projectId: params.projectId as string,
             description: data.description,
         })
         setIsPending(false)

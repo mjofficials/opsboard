@@ -3,14 +3,12 @@
 import { useState } from "react"
 import { toast } from "sonner"
 
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle
 } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -96,8 +94,8 @@ export function ProjectSheet({
     !isCreate && project
       ? {
         title: project.name,
-        // description: project.description ?? "",
-        // status: project.status as ProjectStatus,
+        description: project.description ?? "",
+        status: project.status as ProjectStatus,
       }
       : undefined
 
@@ -110,7 +108,7 @@ export function ProjectSheet({
       : "Save Changes"
 
   const handleCreate = async (data: ProjectFormValues) => {
-    if (!user?.id || !user?.organization_id) {
+    if (!user?.id || !user?.organizationId) {
       toast.error("User does not have an active organization")
       return
     }
@@ -118,7 +116,9 @@ export function ProjectSheet({
     setIsPending(true)
     const { error } = await addProject({
       name: data.title,
-      organization_id: user.organization_id,
+      description: data.description,
+      status: data.status,
+      organizationId: user.organizationId,
     })
     setIsPending(false)
 
@@ -126,7 +126,7 @@ export function ProjectSheet({
       toast.success("Project created successfully")
       onOpenChange(false)
     } else {
-      toast.error("Failed to create project")
+      toast.error(error?.message || "Failed to create project")
     }
   }
 
@@ -136,8 +136,8 @@ export function ProjectSheet({
     setIsPending(true)
     const { error } = await editProject(projectId, {
       name: data.title,
-      // description: data.description,
-      // status: data.status as ProjectStatus,
+      description: data.description,
+      status: data.status as ProjectStatus,
     })
     setIsPending(false)
 

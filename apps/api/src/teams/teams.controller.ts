@@ -16,21 +16,21 @@ export class TeamsController {
   @ApiOperation({ summary: 'Invite a team member' })
   @ApiResponse({ status: 201, description: 'Invitation sent.' })
   create(@Body() createTeamDto: any, @Req() req: any) {
-    return this.teamsService.create(req.user.organization_id, createTeamDto);
+    return this.teamsService.create(req.user.organizationId, createTeamDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all team members' })
   @ApiResponse({ status: 200, description: 'Return all team members.' })
   findAll(@Req() req: any) {
-    return this.teamsService.findAll(req.user.organization_id);
+    return this.teamsService.findAll(req.user.organizationId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a team member by id' })
   @ApiResponse({ status: 200, description: 'Return the team member.' })
   findOne(@Param('id') id: string, @Req() req: any) {
-    return this.teamsService.findOne(id, req.user.organization_id);
+    return this.teamsService.findOne(id, req.user.organizationId);
   }
 
   @Post(':id/accept')

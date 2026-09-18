@@ -1,7 +1,7 @@
 export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER';
 
 export interface OrganizationMembership {
-  organization_id: string;
+  organizationId: string;
   role: UserRole;
   organizations?: {
     name: string;
@@ -13,7 +13,7 @@ export interface User {
   id: string;
   email: string;
   name?: string;
-  organization_id?: string;
+  organizationId?: string;
   role?: UserRole;
   organizations?: OrganizationMembership[];
 }

@@ -15,7 +15,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all users in your active organization' })
   @ApiResponse({ status: 200, description: 'Returns list of users' })
   findAll(@Req() req: any) {
-    return this.usersService.findAll(req.user.organization_id);
+    return this.usersService.findAll(req.user.organizationId);
   }
 
   @Get(':id')

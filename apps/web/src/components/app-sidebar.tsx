@@ -51,14 +51,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return organizations.map((org) => ({
       name: org.organizations?.name || 'Unknown Organization',
       logo: org.organizations?.logo_path || '/logos/default.svg',
-      id: org.organization_id,
+      id: org.organizationId,
       role: org.role,
     }));
   }, [user?.organizations]);
 
   const activeTeam = React.useMemo(() => {
-    return userTeams.find((t) => t.id === user?.organization_id) || userTeams[0];
-  }, [user?.organization_id, userTeams]);
+    return userTeams.find((t) => t.id === user?.organizationId) || userTeams[0];
+  }, [user?.organizationId, userTeams]);
 
   const handleTeamChange = (teamId: string) => {
     setActiveOrganization(teamId);

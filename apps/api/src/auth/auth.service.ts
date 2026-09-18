@@ -46,9 +46,9 @@ export class AuthService {
         email: user.email,
         name: user.name,
         tenant_id: activeMembership?.organizationId,
-        organization_id: activeMembership?.organizationId,
+        organizationId: activeMembership?.organizationId,
         organizations: (user as any).memberships.map((m: any) => ({
-          organization_id: m.organizationId,
+          organizationId: m.organizationId,
           role: m.role,
           name: m.organization.name,
           logo_path: m.organization.logoPath
@@ -87,9 +87,9 @@ export class AuthService {
         email: user.email,
         name: user.name,
         tenant_id: activeMembership?.organizationId,
-        organization_id: activeMembership?.organizationId,
+        organizationId: activeMembership?.organizationId,
         organizations: (user as any).memberships.map((m: any) => ({
-          organization_id: m.organizationId,
+          organizationId: m.organizationId,
           role: m.role,
           name: m.organization.name,
           logo_path: m.organization.logoPath

@@ -25,12 +25,12 @@ export const useAuthStore = create<AuthStore>()(
           const storedOrgId = localStorage.getItem('activeOrgId');
           if (storedOrgId) {
             const isMember = newUser.organizations?.some(
-              (org) => org.organization_id === storedOrgId
+              (org) => org.organizationId === storedOrgId
             );
             if (isMember) {
-              newUser = { ...newUser, organization_id: storedOrgId };
+              newUser = { ...newUser, organizationId: storedOrgId };
               const selectedOrg = newUser.organizations?.find(
-                (org) => org.organization_id === storedOrgId
+                (org) => org.organizationId === storedOrgId
               );
               if (selectedOrg) {
                 newUser.role = selectedOrg.role;
@@ -38,8 +38,8 @@ export const useAuthStore = create<AuthStore>()(
             } else {
               localStorage.removeItem('activeOrgId');
             }
-          } else if (newUser.organization_id) {
-            localStorage.setItem('activeOrgId', newUser.organization_id);
+          } else if (newUser.organizationId) {
+            localStorage.setItem('activeOrgId', newUser.organizationId);
           }
         }
         return {
@@ -71,9 +71,9 @@ export const useAuthStore = create<AuthStore>()(
       setActiveOrganization: (orgId: string) => set((state) => {
         if (!state.user) return state;
         
-        const newUser = { ...state.user, organization_id: orgId };
+        const newUser = { ...state.user, organizationId: orgId };
         const selectedOrg = newUser.organizations?.find(
-          (org) => org.organization_id === orgId
+          (org) => org.organizationId === orgId
         );
         if (selectedOrg) {
           newUser.role = selectedOrg.role;

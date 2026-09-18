@@ -7,10 +7,10 @@ export interface Ticket {
   description: string;
   status: TicketStatus;
   priority: TicketPriority;
-  project_id: string;
-  assignee_id?: string;
-  created_at: string;
-  updated_at: string;
+  projectId: string;
+  assigneeId?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TicketsState {

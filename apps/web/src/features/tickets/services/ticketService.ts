@@ -12,7 +12,7 @@ export const ticketService = {
     return data;
   },
 
-  async createTicket(ticket: Omit<Ticket, 'id' | 'created_at' | 'updated_at'>) {
+  async createTicket(ticket: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt'>) {
     const { data } = await apiClient.post<Ticket>('/tickets', ticket);
     return data;
   },

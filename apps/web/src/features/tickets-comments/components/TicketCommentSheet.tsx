@@ -109,7 +109,7 @@ export function TicketCommentSheet({
             : "Save Changes"
 
     const handleCreate = async (data: TicketCommentFormValues) => {
-        if (!user?.id || !user?.organization_id) {
+        if (!user?.id || !user?.organizationId) {
             toast.error("User does not have an active organization")
             return
         }

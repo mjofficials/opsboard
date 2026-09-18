@@ -11,7 +11,7 @@ import { CreditCardIcon, CheckIcon } from 'lucide-react';
 
 export default function BillingPage() {
   const { user } = useAuth();
-  const { organization, isLoading } = useOrganization(user?.organization_id);
+  const { organization, isLoading } = useOrganization(user?.organizationId);
 
   if (isLoading) {
     return (

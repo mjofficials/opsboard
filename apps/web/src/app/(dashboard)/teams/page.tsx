@@ -58,7 +58,7 @@ export default function TeamsPage() {
     let payload = {
       email: data.email,
       role: data.role,
-      organization_id: user?.organization_id,
+      organizationId: user?.organizationId,
     }
     const { error } = await addTeamMember(payload as Omit<TeamMember, 'id' | 'created_at'>)
     if (!error) {

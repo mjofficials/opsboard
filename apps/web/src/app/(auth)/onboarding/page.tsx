@@ -31,7 +31,7 @@ export default function OnboardingPage() {
       return;
     }
 
-    if (user?.organization_id) {
+    if (user?.organizationId) {
       router.replace("/dashboard");
     }
   }, [user, isLoading, router]);
@@ -58,7 +58,7 @@ export default function OnboardingPage() {
   };
 
   // Render nothing while auth resolves or a redirect is in flight
-  if (isLoading || !user || user?.organization_id) {
+  if (isLoading || !user || user?.organizationId) {
     return null;
   }
 

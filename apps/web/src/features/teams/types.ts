@@ -3,7 +3,7 @@ export type TeamMemberStatus = 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'REJECTED';
 export interface TeamMember {
     id: string;
     email: string;
-    organization_id: string;
+    organizationId: string;
     role: string;
     status: TeamMemberStatus;
     created_at: string;
