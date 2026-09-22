@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useTickets } from "@/features/tickets/hooks/useTickets"
 
 export const ticketCommentSchema = z.object({
-    ticket_id: z.string("Ticket ID is required"),
+    ticketId: z.string("Ticket ID is required"),
     comment: z.string().min(3, "Comment must be at least 3 characters"),
 })
 
@@ -59,14 +59,14 @@ export function TicketCommentForm({
                 schema={ticketCommentSchema}
                 onSubmit={onSubmit}
                 defaultValues={initialData || {
-                    ticket_id: undefined,
+                    ticketId: undefined,
                     comment: "",
                 }}
             >
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <AppSelect
-                            name="ticket_id"
+                            name="ticketId"
                             label="Ticket"
                             options={tickets?.map((ticket) => ({
                                 value: ticket.id,

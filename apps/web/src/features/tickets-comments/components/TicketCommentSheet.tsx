@@ -95,7 +95,7 @@ export function TicketCommentSheet({
     const initialData: TicketCommentFormValues | undefined =
         !isCreate && ticketComment
             ? {
-                ticket_id: String(ticketComment.ticket_id),
+                ticketId: String(ticketComment.ticketId),
                 comment: ticketComment.comment,
             }
             : undefined
@@ -116,7 +116,7 @@ export function TicketCommentSheet({
 
         setIsPending(true)
         const { error } = await addTicketComment({
-            ticket_id: data.ticket_id,
+            ticketId: data.ticketId,
             comment: data.comment,
         })
         setIsPending(false)
@@ -134,7 +134,7 @@ export function TicketCommentSheet({
 
         setIsPending(true)
         const { error } = await editTicketComment(ticketCommentId, {
-            ticket_id: data.ticket_id,
+            ticketId: data.ticketId,
             comment: data.comment,
         })
         setIsPending(false)

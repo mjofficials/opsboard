@@ -1,10 +1,10 @@
 export interface TicketComment {
     id: string;
-    ticket_id?: string;
-    user_id?: string;
+    ticketId?: string;
+    userId?: string;
     comment: string;
-    created_at?: string;
-    updated_at?: string;
+    createdAt?: string;
+    updatedAt?: string;
     user?: TicketCommentUser;
 }
 

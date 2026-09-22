@@ -50,10 +50,10 @@ export default function ProjectsPage() {
       header: "Description",
     },
     {
-      accessorKey: "created_at",
+      accessorKey: "createdAt",
       header: "Created Date",
       cell: ({ row }) => {
-        const dateString: string = row.getValue("created_at")
+        const dateString: string = row.getValue("createdAt")
         return dateString
           ? new Date(dateString).toLocaleDateString()
           : "Unknown"

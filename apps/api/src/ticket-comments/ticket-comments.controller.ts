@@ -14,7 +14,7 @@ export class TicketCommentsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a ticket comment' })
-  create(@Body() createTicketCommentDto: any, @Req() req: any) {
+  create(@Body() createTicketCommentDto: CreateTicketCommentDto, @Req() req: any) {
     return this.ticketCommentsService.create(createTicketCommentDto, req.user.id);
   }
 
@@ -26,7 +26,7 @@ export class TicketCommentsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a ticket comment' })
-  update(@Param('id') id: string, @Body() updateTicketCommentDto: any, @Req() req: any) {
+  update(@Param('id') id: string, @Body() updateTicketCommentDto: UpdateTicketCommentDto, @Req() req: any) {
     return this.ticketCommentsService.update(id, updateTicketCommentDto, req.user.id);
   }
 

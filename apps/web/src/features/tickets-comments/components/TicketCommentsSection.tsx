@@ -21,17 +21,17 @@ export function TicketCommentsSection({ ticketId }: TicketCommentsSectionProps) 
 
   // Filter comments for the current ticket and sort oldest to newest (better for conversational UI)
   const ticketComments = ticketsComments
-    ?.filter((c) => c.ticket_id === ticketId)
-    ?.sort((a, b) => new Date(a.created_at || "").getTime() - new Date(b.created_at || "").getTime()) || []
+    ?.filter((c) => c.ticketId === ticketId)
+    ?.sort((a, b) => new Date(a.createdAt || "").getTime() - new Date(b.createdAt || "").getTime()) || []
 
   const handleSubmit = async () => {
     if (!newComment.trim()) return
 
     setIsSubmitting(true)
     const { error } = await addTicketComment({
-      ticket_id: ticketId,
+      ticketId: ticketId,
       comment: newComment.trim(),
-      user_id: user?.id,
+      userId: user?.id,
     })
     setIsSubmitting(false)
 
@@ -75,7 +75,7 @@ export function TicketCommentsSection({ ticketId }: TicketCommentsSectionProps) 
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{comment.user?.name}</span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(comment.created_at || "").toLocaleString()}
+                    {new Date(comment.createdAt || "").toLocaleString()}
                   </span>
                 </div>
                 <div className="text-sm text-foreground bg-muted/30 p-3 rounded-md border">
