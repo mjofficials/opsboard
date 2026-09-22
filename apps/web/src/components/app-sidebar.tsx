@@ -48,12 +48,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const userTeams = React.useMemo(() => {
     const organizations = user?.organizations;
     if (!organizations?.length) return sidebarData.teams;
-    return organizations.map((org) => ({
-      name: org.organizations?.name || 'Unknown Organization',
-      logo: org.organizations?.logo_path || '/logos/default.svg',
-      id: org.organizationId,
-      role: org.role,
-    }));
+    return organizations.map((org) => {
+      // Handle both flat response (from login API) and nested response (from me API)
+      const typedOrg = org as unknown as { name?: string; logo_path?: string | null; organization?: { name: string; logo_path?: string | null } };
+      const nestedOrg = typedOrg.organization || org.organizations;
+      return {
+        name: typedOrg.name || nestedOrg?.name || 'Unknown Organization',
+        logo: typedOrg.logo_path || nestedOrg?.logo_path || '/logos/default.svg',
+        id: org.organizationId,
+        role: org.role,
+      };
+    });
   }, [user?.organizations]);
 
   const activeTeam = React.useMemo(() => {

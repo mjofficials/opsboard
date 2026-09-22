@@ -111,7 +111,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
               name: user?.name || "User",
               email: user?.email || "No Email",
               role: user?.role || "No Role",
-              avatar: "/avatars/shadcn.jpg"
+              avatar: ""
             }} />
           </div>
         </header>

@@ -37,9 +37,24 @@ export const useAuthStore = create<AuthStore>()(
               }
             } else {
               localStorage.removeItem('activeOrgId');
+              if (newUser.organizations?.length) {
+                const firstOrg = newUser.organizations[0];
+                newUser = { ...newUser, organizationId: firstOrg.organizationId, role: firstOrg.role };
+                localStorage.setItem('activeOrgId', firstOrg.organizationId);
+              }
             }
           } else if (newUser.organizationId) {
             localStorage.setItem('activeOrgId', newUser.organizationId);
+            const selectedOrg = newUser.organizations?.find(
+              (org) => org.organizationId === newUser?.organizationId
+            );
+            if (selectedOrg) {
+              newUser = { ...newUser, role: selectedOrg.role };
+            }
+          } else if (newUser.organizations?.length) {
+            const firstOrg = newUser.organizations[0];
+            newUser = { ...newUser, organizationId: firstOrg.organizationId, role: firstOrg.role };
+            localStorage.setItem('activeOrgId', firstOrg.organizationId);
           }
         }
         return {
