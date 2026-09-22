@@ -19,6 +19,8 @@ export default function TeamsPage() {
   const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams()
   const [isOpen, setIsOpen] = useState(false)
 
+  const isAdminOrOwner = user?.role === 'ADMIN' || user?.role === 'OWNER'
+
   const columns: ColumnDef<TeamMember>[] = [
     {
       accessorKey: "email",
@@ -89,10 +91,12 @@ export default function TeamsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Team Members</h1>
-        <Button onClick={() => setIsOpen(true)}>
-          <UserPlusIcon className="h-4 w-4" />
-          Invite Team Member
-        </Button>
+        {isAdminOrOwner && (
+          <Button onClick={() => setIsOpen(true)}>
+            <UserPlusIcon className="h-4 w-4" />
+            Invite Team Member
+          </Button>
+        )}
       </div>
 
       {/* Invite Modal */}
@@ -104,7 +108,7 @@ export default function TeamsPage() {
         <AppTable
           columns={columns}
           data={teams || []}
-          handleDelete={(args) => handleDelete(args.id)}
+          handleDelete={isAdminOrOwner ? (args) => handleDelete(args.id) : undefined}
         />
       )}
     </div>

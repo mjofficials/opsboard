@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { useProjects } from "@/features/projects/hooks/useProjects"
 import { Project } from "@/features/projects/types"
 import { ProjectSheet, ProjectSheetMode } from "@/features/projects/components/ProjectSheet"
+import { useAuth } from "@/features/auth/hooks/useAuth"
 
 interface SheetState {
   open: boolean
@@ -22,7 +23,10 @@ const CLOSED: SheetState = { open: false, mode: "create" }
 
 export default function ProjectsPage() {
   const router = useRouter()
+  const { user } = useAuth()
   const { projects, isLoading, isError, error, removeProject } = useProjects()
+
+  const isAdminOrOwner = user?.role === 'ADMIN' || user?.role === 'OWNER'
 
   const [sheet, setSheet] = useState<SheetState>(CLOSED)
 
@@ -81,7 +85,9 @@ export default function ProjectsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
-        <Button onClick={() => openSheet("create")}>Create Project</Button>
+        {isAdminOrOwner && (
+          <Button onClick={() => openSheet("create")}>Create Project</Button>
+        )}
       </div>
 
       {isLoading ? (
@@ -93,8 +99,8 @@ export default function ProjectsPage() {
           columns={columns}
           data={projects || []}
           handleView={(row) => router.push(`/projects/${row.id}`)}
-          handleEdit={(row) => openSheet("edit", row.id)}
-          handleDelete={(row) => handleDelete(row.id)}
+          handleEdit={isAdminOrOwner ? (row) => openSheet("edit", row.id) : undefined}
+          handleDelete={isAdminOrOwner ? (row) => handleDelete(row.id) : undefined}
         />
       )}
 

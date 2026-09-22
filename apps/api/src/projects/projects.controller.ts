@@ -3,16 +3,19 @@ import { ProjectsService } from './projects.service.js';
 import { CreateProjectDto } from './dto/create-project.dto.js';
 import { UpdateProjectDto } from './dto/update-project.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
 import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Project Management')
 @ApiCookieAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Create a new project' })
   @ApiResponse({ status: 201, description: 'The project has been successfully created.' })
   create(@Body() createProjectDto: CreateProjectDto, @Request() req: any) {
@@ -35,6 +38,7 @@ export class ProjectsController {
   }
 
   @Patch(':id')
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Update a project' })
   @ApiResponse({ status: 200, description: 'The project has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
@@ -43,6 +47,7 @@ export class ProjectsController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Delete a project' })
   @ApiResponse({ status: 200, description: 'The project has been successfully deleted.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })

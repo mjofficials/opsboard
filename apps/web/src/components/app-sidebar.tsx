@@ -71,10 +71,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain
-          items={sidebarData.navMain.map((item) => ({
-            ...item,
-            isActive: pathname === item.url || pathname.startsWith(item.url + '/'),
-          }))}
+          items={sidebarData.navMain
+            .filter((item) => {
+              if (item.title === 'Users' || item.title === 'Teams') {
+                return user?.role === 'ADMIN' || user?.role === 'OWNER';
+              }
+              return true;
+            })
+            .map((item) => ({
+              ...item,
+              isActive: pathname === item.url || pathname.startsWith(item.url + '/'),
+            }))}
         />
       </SidebarContent>
       <SidebarRail />

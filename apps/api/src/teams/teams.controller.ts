@@ -3,16 +3,19 @@ import { TeamsService } from './teams.service.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { RolesGuard } from '../auth/roles.guard.js';
 import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Teams')
 @ApiCookieAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('teams')
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Post()
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Invite a team member' })
   @ApiResponse({ status: 201, description: 'Invitation sent.' })
   create(@Body() createTeamDto: any, @Req() req: any) {
@@ -20,6 +23,7 @@ export class TeamsController {
   }
 
   @Get()
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Get all team members' })
   @ApiResponse({ status: 200, description: 'Return all team members.' })
   findAll(@Req() req: any) {
@@ -27,6 +31,7 @@ export class TeamsController {
   }
 
   @Get(':id')
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Get a team member by id' })
   @ApiResponse({ status: 200, description: 'Return the team member.' })
   findOne(@Param('id') id: string, @Req() req: any) {
@@ -55,6 +60,7 @@ export class TeamsController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Remove a team member' })
   @ApiResponse({ status: 200, description: 'The team member has been removed.' })
   remove(@Param('id') id: string) {

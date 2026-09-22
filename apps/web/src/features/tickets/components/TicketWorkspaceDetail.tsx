@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useTicket, useTickets } from "@/features/tickets/hooks/useTickets"
+import { useAuth } from "@/features/auth/hooks/useAuth"
 import { TicketForm, TicketFormValues } from "@/features/tickets/components/TicketForm"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -27,6 +28,10 @@ export function TicketWorkspaceDetail({ ticketId }: TicketWorkspaceDetailProps) 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const { data: ticket, isLoading } = useTicket(ticketId)
   const { editTicket, removeTicket } = useTickets()
+  const { user } = useAuth()
+  
+  const isViewer = user?.role === 'VIEWER'
+  const isAdminOrOwner = user?.role === 'ADMIN' || user?.role === 'OWNER'
 
   // Reset editing state when a new ticket is selected
   useEffect(() => {
@@ -76,19 +81,21 @@ export function TicketWorkspaceDetail({ ticketId }: TicketWorkspaceDetailProps) 
             {isEditing ? "Edit Ticket" : ticket.title}
           </h2>
           <div>
-            {!isEditing ? (
-              <Button size="sm" onClick={() => setIsEditing(true)}>
-                <Edit2 className="h-4 w-4 mr-2" />
-                Edit Ticket
-              </Button>
-            ) : (
-              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
-                <X className="h-4 w-4 mr-2" />
-                Cancel Editing
-              </Button>
+            {!isViewer && (
+              !isEditing ? (
+                <Button size="sm" onClick={() => setIsEditing(true)}>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Ticket
+                </Button>
+              ) : (
+                <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel Editing
+                </Button>
+              )
             )}
 
-            {!isEditing && (
+            {!isEditing && isAdminOrOwner && (
               <Button size="sm" variant="destructive" className="ml-2" onClick={() => setIsDeleteDialogOpen(true)}>
                 <Trash2 className="h-4 w-4" />
               </Button>

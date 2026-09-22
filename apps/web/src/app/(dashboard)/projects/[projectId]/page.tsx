@@ -8,6 +8,7 @@ import { useTickets } from "@/features/tickets/hooks/useTickets"
 import { TicketPriority } from "@/features/tickets/types"
 import { toTitleCase } from "@/lib/utils"
 import { ArrowLeft, Plus, Ticket as TicketIcon } from "lucide-react"
+import { useAuth } from "@/features/auth/hooks/useAuth"
 import { useRouter, useSearchParams } from "next/navigation"
 import { use, useState } from "react"
 
@@ -35,6 +36,9 @@ export default function ProjectWorkspacePage({ params }: { params: Promise<{ pro
 
   const { data: project, isLoading: projectLoading } = useProject(projectId)
   const { tickets, isLoading: ticketsLoading } = useTickets()
+  const { user } = useAuth()
+  
+  const isViewer = user?.role === 'VIEWER'
 
   const projectTickets = tickets?.filter(t => t.projectId === projectId) || []
 
@@ -75,10 +79,11 @@ export default function ProjectWorkspacePage({ params }: { params: Promise<{ pro
           <div className="w-1/3 flex flex-col border rounded-lg bg-card shadow-sm overflow-hidden shrink-0">
             <div className="p-4 border-b bg-muted/30 font-medium flex items-center justify-between">
               <span>Issues ({projectTickets.length})</span>
-              <Button variant="default" size="sm" onClick={() => openSheet("create")}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Ticket
-              </Button>
+              {!isViewer && (
+                <Button size="sm" className="h-8 shadow-sm" onClick={() => openSheet("create")}>
+                  <Plus className="mr-2 h-4 w-4" /> Add Ticket
+                </Button>
+              )}
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-2">
               {projectTickets.length === 0 ? (

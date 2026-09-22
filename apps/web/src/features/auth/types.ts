@@ -1,4 +1,4 @@
-export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER';
+export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER';
 
 export interface OrganizationMembership {
   organizationId: string;
