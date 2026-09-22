@@ -18,38 +18,38 @@ export class TicketsController {
   @Roles('ADMIN', 'OWNER', 'MEMBER')
   @ApiOperation({ summary: 'Create a ticket' })
   create(@Body() createTicketDto: any, @Req() req: any) {
-    return this.ticketsService.create(createTicketDto, req.user.id, createTicketDto.projectId);
+    return this.ticketsService.create(createTicketDto, req.user.id, createTicketDto.projectId, req.user.organizationId);
   }
 
   @Get()
   @ApiOperation({ summary: 'List all tickets' })
-  findAll(@Query('projectId') projectId?: string) {
-    return this.ticketsService.findAll(projectId);
+  findAll(@Req() req: any, @Query('projectId') projectId?: string) {
+    return this.ticketsService.findAll(req.user.organizationId, projectId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific ticket' })
-  findOne(@Param('id') id: string) {
-    return this.ticketsService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.ticketsService.findOne(id, req.user.organizationId);
   }
 
   @Get(':id/comments')
   @ApiOperation({ summary: 'Get comments for a ticket' })
-  findComments(@Param('id') id: string) {
-    return this.ticketsService.findComments(id);
+  findComments(@Param('id') id: string, @Req() req: any) {
+    return this.ticketsService.findComments(id, req.user.organizationId);
   }
 
   @Patch(':id')
   @Roles('ADMIN', 'OWNER', 'MEMBER')
   @ApiOperation({ summary: 'Update a ticket' })
-  update(@Param('id') id: string, @Body() updateTicketDto: any) {
-    return this.ticketsService.update(id, updateTicketDto);
+  update(@Param('id') id: string, @Body() updateTicketDto: any, @Req() req: any) {
+    return this.ticketsService.update(id, updateTicketDto, req.user.organizationId);
   }
 
   @Delete(':id')
   @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Delete a ticket' })
-  remove(@Param('id') id: string) {
-    return this.ticketsService.remove(id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.ticketsService.remove(id, req.user.organizationId);
   }
 }

@@ -7,22 +7,25 @@ import { UpdateProjectDto } from './dto/update-project.dto.js';
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createProjectDto: CreateProjectDto, userId: string) {
+  async create(createProjectDto: CreateProjectDto, userId: string, organizationId: string) {
     return this.prisma.project.create({
       data: {
         ...createProjectDto,
+        organizationId: organizationId,
         createdBy: userId,
       },
     });
   }
 
-  async findAll() {
-    return this.prisma.project.findMany();
+  async findAll(organizationId: string) {
+    return this.prisma.project.findMany({
+      where: { organizationId },
+    });
   }
 
-  async findOne(id: string) {
-    const project = await this.prisma.project.findUnique({
-      where: { id },
+  async findOne(id: string, organizationId: string) {
+    const project = await this.prisma.project.findFirst({
+      where: { id, organizationId },
     });
     
     if (!project) {
@@ -32,9 +35,9 @@ export class ProjectsService {
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto) {
-    // Check if it exists first
-    await this.findOne(id);
+  async update(id: string, updateProjectDto: UpdateProjectDto, organizationId: string) {
+    // Check if it exists and belongs to the org first
+    await this.findOne(id, organizationId);
     
     return this.prisma.project.update({
       where: { id },
@@ -42,9 +45,9 @@ export class ProjectsService {
     });
   }
 
-  async remove(id: string) {
-    // Check if it exists first
-    await this.findOne(id);
+  async remove(id: string, organizationId: string) {
+    // Check if it exists and belongs to the org first
+    await this.findOne(id, organizationId);
     
     return this.prisma.project.delete({
       where: { id },

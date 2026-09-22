@@ -19,22 +19,22 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Create a new project' })
   @ApiResponse({ status: 201, description: 'The project has been successfully created.' })
   create(@Body() createProjectDto: CreateProjectDto, @Request() req: any) {
-    return this.projectsService.create(createProjectDto, req.user.id);
+    return this.projectsService.create(createProjectDto, req.user.id, req.user.organizationId);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all projects' })
   @ApiResponse({ status: 200, description: 'Return all projects.' })
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(@Request() req: any) {
+    return this.projectsService.findAll(req.user.organizationId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a project by id' })
   @ApiResponse({ status: 200, description: 'Return the project.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req: any) {
+    return this.projectsService.findOne(id, req.user.organizationId);
   }
 
   @Patch(':id')
@@ -42,8 +42,8 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Update a project' })
   @ApiResponse({ status: 200, description: 'The project has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(id, updateProjectDto);
+  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto, @Request() req: any) {
+    return this.projectsService.update(id, updateProjectDto, req.user.organizationId);
   }
 
   @Delete(':id')
@@ -51,7 +51,7 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Delete a project' })
   @ApiResponse({ status: 200, description: 'The project has been successfully deleted.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.projectsService.remove(id, req.user.organizationId);
   }
 }
