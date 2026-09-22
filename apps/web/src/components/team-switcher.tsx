@@ -53,7 +53,7 @@ export function TeamSwitcher({
                 <Avatar>
                   <AvatarImage src={activeTeam.logo} />
                   <AvatarFallback className="text-lg font-semibold">
-                    {activeTeam?.name?.[0]?.toUpperCase() ?? 'O'}
+                    {activeTeam?.name?.split(" ").map((n) => n[0]).join("").toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -84,7 +84,7 @@ export function TeamSwitcher({
                   <Avatar>
                     <AvatarImage src={team.logo} />
                     <AvatarFallback className="text-lg font-semibold">
-                      {team?.name?.[0]?.toUpperCase() ?? 'O'}
+                      {team?.name?.split(" ").map((n) => n[0]).join("").toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </div>

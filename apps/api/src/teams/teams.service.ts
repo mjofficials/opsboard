@@ -2,6 +2,8 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { randomBytes } from 'crypto';
 import { Resend } from 'resend';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { TeamFilterDto } from './dto/team-filter.dto.js';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TeamsService {
@@ -59,9 +61,15 @@ export class TeamsService {
     return member;
   }
 
-  async findAll(organizationId: string) {
+  async findAll(teamFilterDto: TeamFilterDto, organizationId: string) {
+    const {role, status} = teamFilterDto;
+
     return this.prisma.organizationMember.findMany({
-      where: { organizationId }
+      where: { 
+        organizationId,
+        role,
+        status,
+      }
     });
   }
 

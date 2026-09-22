@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { TeamsService } from './teams.service.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { Roles } from '../auth/roles.decorator.js';
 import { RolesGuard } from '../auth/roles.guard.js';
 import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TeamFilterDto } from './dto/team-filter.dto.js';
 
 @ApiTags('Teams')
 @ApiCookieAuth('access_token')
@@ -26,8 +27,8 @@ export class TeamsController {
   @Roles('ADMIN', 'OWNER')
   @ApiOperation({ summary: 'Get all team members' })
   @ApiResponse({ status: 200, description: 'Return all team members.' })
-  findAll(@Req() req: any) {
-    return this.teamsService.findAll(req.user.organizationId);
+  findAll(@Query() teamFilterDto: TeamFilterDto, @Req() req: any) {
+    return this.teamsService.findAll(teamFilterDto, req.user.organizationId);
   }
 
   @Get(':id')

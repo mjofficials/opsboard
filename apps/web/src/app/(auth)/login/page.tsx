@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -18,7 +19,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, error, clearAuthError } = useAuth();
+
+  useEffect(() => {
+    clearAuthError();
+  }, [clearAuthError]);
 
   const handleLogin = async (data: LoginFormValues) => {
     const { error: loginError } = await login(data.email, data.password);

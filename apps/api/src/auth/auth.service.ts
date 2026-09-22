@@ -68,7 +68,7 @@ export class AuthService {
     } as any);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('user not found with this email address');
     }
 
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);

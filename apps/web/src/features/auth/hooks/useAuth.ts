@@ -4,7 +4,7 @@ import { authService } from '../services/authService';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useAuth = () => {
-  const { user, session, status, error, isInitialized, setAuthLoading, setAuthSession, clearAuthSession, setAuthError } = useAuthStore();
+  const { user, session, status, error, isInitialized, setAuthLoading, setAuthSession, clearAuthSession, setAuthError, clearAuthError } = useAuthStore();
   const queryClient = useQueryClient();
 
   const initAuth = useCallback(async (options?: { silent?: boolean }) => {
@@ -92,5 +92,6 @@ export const useAuth = () => {
     register,
     logout,
     createOrganization,
+    clearAuthError,
   };
 };

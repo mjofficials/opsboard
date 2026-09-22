@@ -31,7 +31,7 @@ export class OrganizationsService {
     }
   }
 
-  async create(createOrganizationDto: CreateOrganizationDto, userId?: string) {
+  async create(createOrganizationDto: CreateOrganizationDto, userId?: string, email?: string) {
     const org = await this.prisma.organization.create({
       data: createOrganizationDto,
     });
@@ -42,7 +42,8 @@ export class OrganizationsService {
           userId,
           organizationId: org.id,
           role: 'OWNER',
-          email: ''
+          email: email || '',
+          status: 'ACCEPTED',
         },
       });
     }

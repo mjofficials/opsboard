@@ -100,7 +100,7 @@ export default function GeneralSettingsPage() {
           <Avatar className="h-16 w-16">
             <AvatarImage src={organization?.logo_path ?? ''} />
             <AvatarFallback className="text-lg font-semibold">
-              {organization?.name?.[0]?.toUpperCase() ?? 'O'}
+              {organization?.name?.split(" ").map((n) => n[0]).join("").toUpperCase()}
             </AvatarFallback>
           </Avatar>
           {(isAdmin || isOwner) && (

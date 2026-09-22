@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { z } from "zod";
 
 const registerSchema = z.object({
@@ -19,7 +20,11 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, isLoading, error } = useAuth();
+  const { register, isLoading, error, clearAuthError } = useAuth();
+
+  useEffect(() => {
+    clearAuthError();
+  }, [clearAuthError]);
 
   const handleRegister = async (data: RegisterFormValues) => {
     const { error: registerError } = await register(data.name, data.email, data.password);

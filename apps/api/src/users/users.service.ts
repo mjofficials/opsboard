@@ -12,7 +12,10 @@ export class UsersService {
     }
     
     const members = await this.prisma.organizationMember.findMany({
-      where: { organizationId },
+      where: { 
+        organizationId,
+        status: 'ACCEPTED',
+      },
       select: {
         role: true,
         user: {

@@ -6,6 +6,7 @@ interface AuthStore extends AuthState {
   setAuthSession: (payload: { session: Session | null; user: User | null }) => void;
   setAuthLoading: () => void;
   setAuthError: (error: string) => void;
+  clearAuthError: () => void;
   clearAuthSession: () => void;
   setActiveOrganization: (orgId: string) => void;
 }
@@ -69,6 +70,8 @@ export const useAuthStore = create<AuthStore>()(
       setAuthLoading: () => set({ status: 'loading', error: null }),
 
       setAuthError: (error) => set({ status: 'failed', isInitialized: true, error }),
+
+      clearAuthError: () => set({ error: null, status: 'idle' }),
 
       clearAuthSession: () => {
         if (typeof window !== 'undefined') {

@@ -32,7 +32,8 @@ export class OrganizationsController {
   @ApiResponse({ status: 201, description: 'The organization has been successfully created.' })
   create(@Body() createOrganizationDto: CreateOrganizationDto, @Req() req: any) {
     const userId = req.user?.id;
-    return this.organizationsService.create(createOrganizationDto, userId);
+    const email = req.user?.email;
+    return this.organizationsService.create(createOrganizationDto, userId, email);
   }
 
   @Get(':id')

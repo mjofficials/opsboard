@@ -2,8 +2,8 @@ import { apiClient } from '@/lib/api/apiClient';
 import { TeamMember } from '../types';
 
 export const teamService = {
-  async getTeamMembers() {
-    const { data } = await apiClient.get<TeamMember[]>('/teams');
+  async getTeamMembers(params?: { status?: string; role?: string }) {
+    const { data } = await apiClient.get<TeamMember[]>('/teams', { params });
     return data;
   },
 

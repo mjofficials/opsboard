@@ -1,8 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { teamService } from '../services/teamService';
 import { TeamMember } from '../types';
+type TeamFilters = {
+    status?: string;
+    role?: string;
+};
 
-export const useTeams = () => {
+export const useTeams = (filters?: TeamFilters) => {
     const queryClient = useQueryClient();
 
     const {
@@ -11,9 +15,9 @@ export const useTeams = () => {
         isError,
         error,
         refetch,
-    } = useQuery({
-        queryKey: ['teams'],
-        queryFn: teamService.getTeamMembers,
+    } = useQuery<TeamMember[], Error>({
+        queryKey: ['teams', filters],
+        queryFn: () => teamService.getTeamMembers(filters),
     });
 
     const invalidateTeams = () => {

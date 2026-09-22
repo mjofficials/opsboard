@@ -14,8 +14,11 @@ import { useState } from "react";
 
 export default function TeamsPage() {
   const { user } = useAuth()
-  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams()
   const [isOpen, setIsOpen] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<string>('PENDING')
+  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams({ 
+    status: statusFilter === 'ALL' ? undefined : statusFilter 
+  })
 
   const isAdminOrOwner = user?.role === 'ADMIN' || user?.role === 'OWNER'
 
@@ -89,12 +92,25 @@ export default function TeamsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Team Members</h1>
-        {isAdminOrOwner && (
-          <Button onClick={() => setIsOpen(true)}>
-            <UserPlusIcon className="h-4 w-4" />
-            Invite Team Member
-          </Button>
-        )}
+        <div className="flex items-center gap-4">
+          <select 
+            className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="ACCEPTED">Accepted</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="EXPIRED">Expired</option>
+          </select>
+          {isAdminOrOwner && (
+            <Button onClick={() => setIsOpen(true)}>
+              <UserPlusIcon className="h-4 w-4" />
+              Invite Team Member
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Invite Modal */}

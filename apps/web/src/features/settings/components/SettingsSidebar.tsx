@@ -36,7 +36,7 @@ function SidebarLink({ item }: { item: typeof baseNavItems[0] }) {
         isActive
           ? 'bg-accent text-accent-foreground'
           : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-        (item.href === '/settings/danger-zone' || item.href === '/settings/billing') &&
+        (item.href === '/settings/danger-zone') &&
         'text-destructive hover:text-destructive'
       )}
     >
