@@ -20,8 +20,9 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
 
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({
-    origin: 'http://localhost:3000', // Next.js port
+    origin: [frontendUrl, 'http://localhost:3000'],
     credentials: true,
   });
 

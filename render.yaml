@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: opsboard-api
+    env: node
+    buildCommand: npm install && npm run build -w api
+    startCommand: npm run start:prod -w api
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
