@@ -33,18 +33,18 @@ export const useOrganization = (orgId: string | undefined) => {
     try {
       await updateMutation.mutateAsync(updates);
       return { error: null };
-    } catch (err: any) {
-      return { error: err.message };
-    }
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
+        }
   };
 
   const deleteOrganization = async () => {
     try {
       await deleteMutation.mutateAsync();
       return { error: null };
-    } catch (err: any) {
-      return { error: err.message };
-    }
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
+        }
   };
 
   return {

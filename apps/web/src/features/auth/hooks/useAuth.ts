@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '../services/authService';
 import { useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/apiClient';
 
 export const useAuth = () => {
   const { user, session, status, error, isInitialized, setAuthLoading, setAuthSession, clearAuthSession, setAuthError } = useAuthStore();
@@ -19,11 +18,11 @@ export const useAuth = () => {
         queryClient.clear();
         clearAuthSession();
       } else {
-        setAuthSession({ session: null as any, user: data.user });
+        setAuthSession({ session: null, user: data.user });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (!options?.silent) {
-        setAuthError(err.message);
+        setAuthError(err instanceof Error ? err.message : String(err));
       }
     }
   }, [setAuthLoading, setAuthSession, clearAuthSession, setAuthError, queryClient]);
@@ -44,7 +43,7 @@ export const useAuth = () => {
       setAuthError(error.message);
       return { error };
     }
-    setAuthSession({ session: null as any, user: data.user as any });
+    setAuthSession({ session: null, user: data.user as unknown as NonNullable<typeof user> });
     return { data };
   };
 
@@ -55,7 +54,7 @@ export const useAuth = () => {
       setAuthError(error.message);
       return { error };
     }
-    setAuthSession({ session: null as any, user: data.user as any });
+    setAuthSession({ session: null, user: data.user as unknown as NonNullable<typeof user> });
     return { data };
   };
 
@@ -79,7 +78,7 @@ export const useAuth = () => {
       return { error };
     }
     // Update user locally
-    setAuthSession({ session: null as any, user: { ...user, organizationId: data.id } as any });
+    setAuthSession({ session: null, user: { ...user, organizationId: data.id } as NonNullable<typeof user> });
     return { data };
   };
 

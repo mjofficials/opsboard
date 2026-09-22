@@ -35,7 +35,9 @@ export function TicketWorkspaceDetail({ ticketId }: TicketWorkspaceDetailProps) 
 
   // Reset editing state when a new ticket is selected
   useEffect(() => {
-    setIsEditing(false)
+    // Avoid synchronous setState in effect warning
+    const timer = setTimeout(() => setIsEditing(false), 0)
+    return () => clearTimeout(timer)
   }, [ticketId])
 
   if (isLoading) {

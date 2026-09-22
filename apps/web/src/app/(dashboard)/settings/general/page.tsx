@@ -62,8 +62,8 @@ export default function GeneralSettingsPage() {
       const { error } = await updateOrganization({ logo_path: url });
       if (error) throw new Error(error);
       toast.success('Logo updated');
-    } catch (err: any) {
-      toast.error('Failed to upload logo', { description: err.message });
+    } catch (err: unknown) {
+      toast.error('Failed to upload logo', { description: err instanceof Error ? err.message : String(err) });
     } finally {
       setIsUploadingAvatar(false);
       e.target.value = '';

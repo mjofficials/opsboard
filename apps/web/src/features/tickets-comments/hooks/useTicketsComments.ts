@@ -49,8 +49,8 @@ export const useTicketsComments = (ticketId?: string) => {
         try {
             await addMutation.mutateAsync(ticketCommentData);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -58,8 +58,8 @@ export const useTicketsComments = (ticketId?: string) => {
         try {
             await editMutation.mutateAsync({ id, updates });
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -67,8 +67,8 @@ export const useTicketsComments = (ticketId?: string) => {
         try {
             await removeMutation.mutateAsync(id);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 

@@ -48,8 +48,8 @@ export const useUsers = () => {
         try {
             await addMutation.mutateAsync(userData);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -57,8 +57,8 @@ export const useUsers = () => {
         try {
             await editMutation.mutateAsync({ id, updates });
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -66,8 +66,8 @@ export const useUsers = () => {
         try {
             await removeMutation.mutateAsync(id);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 

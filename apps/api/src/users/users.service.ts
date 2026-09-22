@@ -10,23 +10,28 @@ export class UsersService {
     if (!organizationId) {
       return this.prisma.user.findMany();
     }
-    return this.prisma.user.findMany({
-      where: {
-        memberships: {
-          some: {
-            organizationId,
+    
+    const members = await this.prisma.organizationMember.findMany({
+      where: { organizationId },
+      select: {
+        role: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
           }
         }
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
       }
     });
+
+    return members.map(member => ({
+      ...member.user,
+      role: member.role,
+    }));
   }
 
   async findOne(id: string) {

@@ -19,7 +19,7 @@ export const useAuthStore = create<AuthStore>()(
       error: null,
       isInitialized: false,
 
-      setAuthSession: (payload) => set((state) => {
+      setAuthSession: (payload) => set(() => {
         let newUser = payload.user;
         if (newUser && typeof window !== 'undefined') {
           const storedOrgId = localStorage.getItem('activeOrgId');

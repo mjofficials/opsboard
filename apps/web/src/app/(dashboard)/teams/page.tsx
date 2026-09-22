@@ -6,7 +6,6 @@ import { useTeams } from "@/features/teams/hooks/useTeams";
 import { TeamMember } from "@/features/teams/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { UserPlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -14,7 +13,6 @@ import InviteModal, { InviteFormValues } from "@/features/teams/components/invit
 import { useState } from "react";
 
 export default function TeamsPage() {
-  const router = useRouter();
   const { user } = useAuth()
   const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams()
   const [isOpen, setIsOpen] = useState(false)
@@ -57,7 +55,7 @@ export default function TeamsPage() {
   const handleSubmit = async (data: InviteFormValues) => {
     console.log(data)
 
-    let payload = {
+    const payload = {
       email: data.email,
       role: data.role,
       organizationId: user?.organizationId,

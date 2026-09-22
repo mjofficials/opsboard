@@ -46,8 +46,8 @@ export const useTeams = () => {
         try {
             await addMutation.mutateAsync(teamMemberData);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -55,8 +55,8 @@ export const useTeams = () => {
         try {
             await deleteMutation.mutateAsync(id);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -64,8 +64,8 @@ export const useTeams = () => {
         try {
             await acceptMutation.mutateAsync(id);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 
@@ -73,8 +73,8 @@ export const useTeams = () => {
         try {
             await rejectMutation.mutateAsync(id);
             return { error: null };
-        } catch (err: any) {
-            return { error: err.message };
+        } catch (err: unknown) {
+            return { error: err instanceof Error ? err.message : String(err) };
         }
     };
 

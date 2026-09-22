@@ -9,7 +9,9 @@ export default function AppGlobalLoader() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    // Avoid synchronous setState in effect warning
+    const t = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
@@ -17,7 +19,9 @@ export default function AppGlobalLoader() {
       const timer = setTimeout(() => setShowLoader(false), 800);
       return () => clearTimeout(timer);
     } else {
-      setShowLoader(true);
+      // Avoid synchronous setState in effect warning
+      const timer = setTimeout(() => setShowLoader(true), 0);
+      return () => clearTimeout(timer);
     }
   }, [isInitialized]);
 

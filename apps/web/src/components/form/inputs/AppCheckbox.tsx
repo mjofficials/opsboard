@@ -5,10 +5,7 @@ import { useController, type FieldValues } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField, type FormFieldProps } from "../FormField";
 
-export interface AppCheckboxProps<T extends FieldValues>
-    extends Omit<FormFieldProps<T>, "children"> {
-    // We can add specific checkbox props here if needed, like trailingLabel
-}
+export type AppCheckboxProps<T extends FieldValues> = Omit<FormFieldProps<T>, "children">;
 
 /**
  * Radix Checkbox wrapper.

@@ -26,10 +26,7 @@ export interface ProjectSheetProps {
   mode?: ProjectSheetMode
 }
 
-const STATUS_CLASSES: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-800 hover:bg-green-100",
-  INACTIVE: "bg-slate-100 text-slate-800 hover:bg-slate-100",
-}
+
 
 function ProjectFormSkeleton() {
   return (
@@ -86,7 +83,6 @@ export function ProjectSheet({
 
   const isCreate = mode === "create"
   const isView = mode === "view"
-  const isEdit = mode === "edit"
 
   const header = HEADER[mode]
 
@@ -126,7 +122,7 @@ export function ProjectSheet({
       toast.success("Project created successfully")
       onOpenChange(false)
     } else {
-      toast.error(error?.message || "Failed to create project")
+      toast.error(error || "Failed to create project")
     }
   }
 

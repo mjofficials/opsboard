@@ -35,12 +35,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogMedia,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Trash2Icon } from "lucide-react"
 
@@ -48,7 +46,6 @@ interface AppTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   searchKey?: string
-  actions?: React.ReactNode
   handleView?: (args: TData) => void
   handleEdit?: (args: TData) => void
   handleDelete?: (args: TData) => void
@@ -59,7 +56,6 @@ interface AppTableProps<TData, TValue> {
 export function AppTable<TData, TValue>({
   columns,
   data,
-  actions,
   handleView,
   handleEdit,
   handleDelete,
@@ -70,6 +66,7 @@ export function AppTable<TData, TValue>({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [selectedItemId, setSelectedItemId] = React.useState<TData | null>(null)
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns: [...columns, {
@@ -95,7 +92,7 @@ export function AppTable<TData, TValue>({
                     setIsDeleteDialogOpen(true)
                   }}
                   // Prevent the dropdown menu from closing when this item is selected
-                  onSelect={(e) => e.preventDefault()}>
+                  onSelect={(e: Event) => e.preventDefault()}>
                   Delete
                 </DropdownMenuItem>}
               </DropdownMenuGroup>

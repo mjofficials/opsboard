@@ -88,7 +88,6 @@ export function TicketSheet({
 
     const isCreate = mode === "create"
     const isView = mode === "view"
-    const isEdit = mode === "edit"
 
     const header = HEADER[mode]
 
@@ -131,7 +130,7 @@ export function TicketSheet({
             toast.success("Ticket created successfully")
             onOpenChange(false)
         } else {
-            toast.error("Failed to create ticket")
+            toast.error(error || "Failed to create ticket")
         }
     }
 
@@ -152,7 +151,7 @@ export function TicketSheet({
             toast.success("Ticket updated successfully")
             onOpenChange(false)
         } else {
-            toast.error("Failed to update ticket")
+            toast.error(error || "Failed to update ticket")
         }
     }
 

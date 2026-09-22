@@ -47,7 +47,7 @@ export function FormField<T extends FieldValues>({
                 {React.Children.map(children, (child) => {
                     if (!React.isValidElement(child)) return child;
 
-                    const childElement = child as React.ReactElement<any>;
+                    const childElement = child as React.ReactElement<Record<string, unknown>>;
 
                     return React.cloneElement(childElement, {
                         ...childElement.props,

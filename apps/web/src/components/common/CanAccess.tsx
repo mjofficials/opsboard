@@ -33,7 +33,7 @@ export const CanAccess: React.FC<CanAccessProps> = ({ roles, children, fallback 
       </div>
       <h3 className="text-sm font-semibold mb-1">Access Restricted</h3>
       <p className="text-xs text-muted-foreground max-w-[250px]">
-        You don't have permission to view this content. Required role: {roles.join(' or ')}. Your role: {currentRole || 'Unknown'}.
+        You don&apos;t have permission to view this content. Required role: {roles.join(' or ')}. Your role: {currentRole || 'Unknown'}.
       </p>
     </div>
   );

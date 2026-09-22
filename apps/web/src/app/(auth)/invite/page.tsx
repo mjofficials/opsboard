@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { teamService } from "@/features/teams/services/teamService";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { z } from "zod";
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { toast } from "sonner";
 
 const registerSchema = z.object({
@@ -20,31 +20,30 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 function InviteForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!token) {
-      setError("No invitation token found in URL.");
-    }
-  }, [token]);
+  const error = !token ? "No invitation token found in URL." : apiError;
 
   const handleRegisterAndAccept = async (data: RegisterFormValues) => {
     if (!token) return;
     setIsLoading(true);
-    setError(null);
+    setApiError(null);
 
     // 1. Register User
     const { error: registerError } = await register(data.name, data.email, data.password);
     
     // If error isn't explicitly null, it failed. (Often returns string or object)
     if (registerError && (typeof registerError === 'string' || Object.keys(registerError).length > 0)) {
-      setError(typeof registerError === 'string' ? registerError : (registerError as any).message || "Registration failed.");
+      setApiError(
+        typeof registerError === 'string' 
+          ? registerError 
+          : (registerError as { message?: string }).message || "Registration failed."
+      );
       setIsLoading(false);
       return;
     }
@@ -55,9 +54,23 @@ function InviteForm() {
       toast.success("Invitation accepted successfully!");
       // Force reload to update session/dashboard
       window.location.href = "/dashboard";
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.response?.data?.message || err.message || "Failed to accept invite. Please ensure you used the invited email address.");
+      
+      let errorMessage = "Failed to accept invite. Please ensure you used the invited email address.";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      if (typeof err === "object" && err !== null && "response" in err) {
+        const response = (err as Record<string, unknown>).response as Record<string, unknown> | undefined;
+        const data = response?.data as Record<string, unknown> | undefined;
+        if (data?.message && typeof data.message === "string") {
+          errorMessage = data.message;
+        }
+      }
+
+      setApiError(errorMessage);
       setIsLoading(false);
     }
   }

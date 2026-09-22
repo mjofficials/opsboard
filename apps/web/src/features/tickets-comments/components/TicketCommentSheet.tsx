@@ -26,10 +26,7 @@ export interface TicketCommentSheetProps {
     mode?: TicketCommentSheetMode
 }
 
-const STATUS_CLASSES: Record<string, string> = {
-    ACTIVE: "bg-green-100 text-green-800 hover:bg-green-100",
-    INACTIVE: "bg-slate-100 text-slate-800 hover:bg-slate-100",
-}
+
 
 function TicketFormSkeleton() {
     return (
@@ -88,7 +85,6 @@ export function TicketCommentSheet({
 
     const isCreate = mode === "create"
     const isView = mode === "view"
-    const isEdit = mode === "edit"
 
     const header = HEADER[mode]
 
@@ -125,7 +121,7 @@ export function TicketCommentSheet({
             toast.success("Ticket created successfully")
             onOpenChange(false)
         } else {
-            toast.error("Failed to create ticket")
+            toast.error(error || "Failed to create ticket")
         }
     }
 
@@ -143,7 +139,7 @@ export function TicketCommentSheet({
             toast.success("Ticket updated successfully")
             onOpenChange(false)
         } else {
-            toast.error("Failed to update ticket")
+            toast.error(error || "Failed to update ticket")
         }
     }
 
