@@ -40,6 +40,13 @@ export class TeamsController {
     return this.teamsService.accept(id, req.user.id, req.user.email);
   }
 
+  @Post('accept-invite')
+  @ApiOperation({ summary: 'Accept a team invitation via token' })
+  @ApiResponse({ status: 200, description: 'Invitation accepted.' })
+  acceptInvite(@Body('token') token: string, @Req() req: any) {
+    return this.teamsService.acceptInviteByToken(token, req.user.id, req.user.email);
+  }
+
   @Post(':id/reject')
   @ApiOperation({ summary: 'Reject a team invitation' })
   @ApiResponse({ status: 200, description: 'Invitation rejected.' })

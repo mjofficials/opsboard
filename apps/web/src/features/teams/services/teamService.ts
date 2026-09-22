@@ -17,6 +17,11 @@ export const teamService = {
     return data;
   },
 
+  async acceptInviteByToken(token: string) {
+    const { data } = await apiClient.post<TeamMember>(`/teams/accept-invite`, { token });
+    return data;
+  },
+
   async rejectTeamMember(id: string) {
     const { data } = await apiClient.post<TeamMember>(`/teams/${id}/reject`);
     return data;

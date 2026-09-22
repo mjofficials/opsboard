@@ -16,7 +16,7 @@ import { useState } from "react";
 export default function TeamsPage() {
   const router = useRouter();
   const { user } = useAuth()
-  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember, acceptTeamMember, rejectTeamMember } = useTeams()
+  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams()
   const [isOpen, setIsOpen] = useState(false)
 
   const columns: ColumnDef<TeamMember>[] = [
@@ -43,10 +43,10 @@ export default function TeamsPage() {
       ),
     },
     {
-      accessorKey: "created_at",
+      accessorKey: "createdAt",
       header: "Created Date",
       cell: ({ row }) => {
-        const dateString: string = row.getValue("created_at")
+        const dateString: string = row.getValue("createdAt")
         return dateString ? new Date(dateString).toLocaleDateString() : "Unknown"
       },
     }
@@ -67,26 +67,6 @@ export default function TeamsPage() {
       toast.error("Failed to invite team member")
     }
     setIsOpen(false)
-  }
-
-  const handleAccept = async (id: string) => {
-    console.log(id)
-    const { error } = await acceptTeamMember(id)
-    if (!error) {
-      toast.success("Team member accepted successfully")
-    } else {
-      toast.error("Failed to accept team member")
-    }
-  }
-
-  const handleReject = async (id: string) => {
-    console.log(id)
-    const { error } = await rejectTeamMember(id)
-    if (!error) {
-      toast.success("Team member rejected successfully")
-    } else {
-      toast.error("Failed to reject team member")
-    }
   }
 
   const handleDelete = async (id: string) => {
@@ -124,8 +104,6 @@ export default function TeamsPage() {
         <AppTable
           columns={columns}
           data={teams || []}
-          handleAccept={(args) => handleAccept(args.id)}
-          handleReject={(args) => handleReject(args.id)}
           handleDelete={(args) => handleDelete(args.id)}
         />
       )}
