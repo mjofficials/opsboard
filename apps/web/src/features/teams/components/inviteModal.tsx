@@ -10,7 +10,7 @@ import { z } from "zod"
 
 const inviteSchema = z.object({
     email: z.string().email("Invalid email address"),
-    role: z.enum(["MEMBER"])
+    role: z.enum(["MEMBER", "VIEWER"])
 })
 
 export type InviteFormValues = z.infer<typeof inviteSchema>
@@ -59,6 +59,7 @@ export default function InviteModal({
                             label="Role"
                             options={[
                                 { value: "MEMBER", label: "Member" },
+                                { value: "VIEWER", label: "Viewer" },
                             ]}
                             placeholder="Select Role"
                         />

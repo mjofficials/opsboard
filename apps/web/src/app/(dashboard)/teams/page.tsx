@@ -1,91 +1,92 @@
-"use client"
+'use client';
 
-import { AppTable } from "@/components/common/AppTable";
-import { Button } from "@/components/ui/button";
-import { useTeams } from "@/features/teams/hooks/useTeams";
-import { TeamMember } from "@/features/teams/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { UserPlusIcon } from "lucide-react";
-import { toast } from "sonner";
+import { AppTable } from '@/components/common/AppTable';
+import { Button } from '@/components/ui/button';
+import { useTeams } from '@/features/teams/hooks/useTeams';
+import { TeamMember } from '@/features/teams/types';
+import { ColumnDef } from '@tanstack/react-table';
+import { UserPlusIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import InviteModal, { InviteFormValues } from "@/features/teams/components/inviteModal";
-import { useState } from "react";
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import InviteModal, { InviteFormValues } from '@/features/teams/components/inviteModal';
+import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function TeamsPage() {
-  const { user } = useAuth()
-  const [isOpen, setIsOpen] = useState(false)
-  const [statusFilter, setStatusFilter] = useState<string>('PENDING')
-  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams({ 
-    status: statusFilter === 'ALL' ? undefined : statusFilter 
-  })
+  const { user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>('PENDING');
+  const { teams, isLoading, isError, error, addTeamMember, deleteTeamMember } = useTeams({
+    status: statusFilter === 'ALL' ? undefined : statusFilter,
+  });
 
-  const isAdminOrOwner = user?.role === 'ADMIN' || user?.role === 'OWNER'
+  const isAdminOrOwner = user?.role === 'ADMIN' || user?.role === 'OWNER';
 
   const columns: ColumnDef<TeamMember>[] = [
     {
-      accessorKey: "email",
-      header: "Email",
+      accessorKey: 'email',
+      header: 'Email',
     },
     {
-      accessorKey: "role",
-      header: "Role",
+      accessorKey: 'role',
+      header: 'Role',
       cell: ({ row }) => (
         <span className="capitalize px-2 py-1 rounded border text-xs bg-muted">
-          {row.getValue("role")}
+          {row.getValue('role')}
         </span>
       ),
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: 'status',
+      header: 'Status',
       cell: ({ row }) => (
         <span className="capitalize px-2 py-1 rounded border text-xs bg-muted">
-          {row.getValue("status")}
+          {row.getValue('status')}
         </span>
       ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Created Date",
+      accessorKey: 'createdAt',
+      header: 'Created Date',
       cell: ({ row }) => {
-        const dateString: string = row.getValue("createdAt")
-        return dateString ? new Date(dateString).toLocaleDateString() : "Unknown"
+        const dateString: string = row.getValue('createdAt');
+        return dateString ? new Date(dateString).toLocaleDateString() : 'Unknown';
       },
-    }
+    },
   ];
 
   const handleSubmit = async (data: InviteFormValues) => {
-    console.log(data)
+    console.log(data);
 
     const payload = {
       email: data.email,
       role: data.role,
       organizationId: user?.organizationId,
-    }
-    const { error } = await addTeamMember(payload as Omit<TeamMember, 'id' | 'created_at'>)
+    };
+    const { error } = await addTeamMember(payload as Omit<TeamMember, 'id' | 'created_at'>);
     if (!error) {
-      toast.success("Team member invited successfully")
+      toast.success('Team member invited successfully');
     } else {
-      toast.error("Failed to invite team member")
+      toast.error('Failed to invite team member');
     }
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   const handleDelete = async (id: string) => {
-    console.log(id)
-    const { error } = await deleteTeamMember(id)
+    console.log(id);
+    const { error } = await deleteTeamMember(id);
     if (!error) {
-      toast.success("Team member deleted successfully")
+      toast.success('Team member deleted successfully');
     } else {
-      toast.error("Failed to delete team member")
+      toast.error('Failed to delete team member');
     }
-  }
+  };
 
   if (isError) {
-    toast.error("Failed to load team members", {
-      description: error
-    })
+    toast.error('Failed to load team members', {
+      description: error,
+    });
   }
 
   return (
@@ -93,17 +94,18 @@ export default function TeamsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Team Members</h1>
         <div className="flex items-center gap-4">
-          <select 
-            className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="PENDING">Pending</option>
-            <option value="ACCEPTED">Accepted</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="EXPIRED">Expired</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px] h-9">
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="ACCEPTED">Accepted</SelectItem>
+              <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="EXPIRED">Expired</SelectItem>
+            </SelectContent>
+          </Select>
           {isAdminOrOwner && (
             <Button onClick={() => setIsOpen(true)}>
               <UserPlusIcon className="h-4 w-4" />
@@ -117,7 +119,9 @@ export default function TeamsPage() {
       <InviteModal onSubmit={handleSubmit} isOpen={isOpen} setIsOpen={setIsOpen} />
 
       {isLoading ? (
-        <div className="py-10 text-center text-muted-foreground animate-pulse">Loading dataset...</div>
+        <div className="py-10 text-center text-muted-foreground animate-pulse">
+          Loading dataset...
+        </div>
       ) : (
         <AppTable
           columns={columns}
