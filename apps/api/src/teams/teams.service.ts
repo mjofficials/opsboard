@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
 import { Resend } from 'resend';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -9,8 +10,12 @@ import { Prisma } from '@prisma/client';
 export class TeamsService {
   private resend: Resend;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.resend = new Resend(process.env.RESEND_API_KEY || 'mock_key');
+  constructor(
+    private readonly prisma: PrismaService,
+    private configService: ConfigService,
+  ) {
+    const resendKey = this.configService.get<string>('RESEND_API_KEY') || process.env.RESEND_API_KEY;
+    this.resend = new Resend(resendKey || 'mock_key');
   }
 
   async create(organizationId: string, createTeamDto: any) {
@@ -41,16 +46,19 @@ export class TeamsService {
       }
     });
 
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite?token=${inviteToken}`;
+    const appUrl = this.configService.get<string>('NEXT_PUBLIC_APP_URL') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const inviteUrl = `${appUrl}/invite?token=${inviteToken}`;
     
-    if (process.env.RESEND_API_KEY) {
+    const resendKey = this.configService.get<string>('RESEND_API_KEY') || process.env.RESEND_API_KEY;
+    if (resendKey) {
       try {
-        await this.resend.emails.send({
-          from: 'Opsboard <onboarding@resend.dev>',
+        const res = await this.resend.emails.send({
+          from: 'Opsboard <onboarding@opsboard.co.in>',
           to: email,
           subject: 'You have been invited to join Opsboard',
           html: `<p>You have been invited to join an organization on Opsboard.</p><p><a href="${inviteUrl}">Click here to accept the invitation and sign up</a></p>`
         });
+        console.log('[Resend Email Success]:', res);
       } catch (error) {
         console.error('Failed to send invite email:', error);
       }

@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
@@ -20,12 +21,14 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
 
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const configService = app.get(ConfigService);
+  const frontendUrl = configService.get<string>('FRONTEND_URL') || process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({
     origin: [frontendUrl, 'http://localhost:3000'],
     credentials: true,
   });
 
-  await app.listen(process.env.PORT ?? 4000);
+  const port = configService.get<number>('PORT') || process.env.PORT || 4000;
+  await app.listen(port);
 }
 bootstrap();

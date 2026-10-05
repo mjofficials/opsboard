@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Res, Get, UseGuards, Req } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -9,7 +10,10 @@ import { JwtAuthGuard } from './jwt-auth.guard.js';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private configService: ConfigService
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -18,11 +22,13 @@ export class AuthController {
   async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) response: Response) {
     const { access_token, user } = await this.authService.register(registerDto);
     
+    const isProd = this.configService.get('NODE_ENV') === 'production';
+    
     // Set HTTP-Only cookie
     response.cookie('access_token', access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
@@ -37,11 +43,13 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { access_token, user } = await this.authService.login(loginDto);
     
+    const isProd = this.configService.get('NODE_ENV') === 'production';
+    
     // Set HTTP-Only cookie
     response.cookie('access_token', access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
